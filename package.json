@@ -1,0 +1,22 @@
+{
+  "name": "helloworld",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/css/styles.css -o ./static/css/styles.css --minify",
+    "watch:css": "tailwindcss -i ./assets/css/styles.css -o ./static/css/styles.css --watch",
+    "dev": "npm run watch:css & templ generate --watch --cmd=\"go run .\"",
+    "build": "npm run build:css && templ generate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.15.17"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.6",
+    "tailwindcss": "^4.1.6"
+  }
+}

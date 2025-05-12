@@ -1,0 +1,22 @@
+package templates
+
+templ headSection(contents templ.Component) {
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<link rel="stylesheet" href="/static/css/styles.css"/>
+		@contents
+	</head>
+}
+
+templ mainLayout(headContent templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		@headSection(headContent)
+		<body>
+			<div>
+				{ children... }
+			</div>
+		</body>
+	</html>
+}

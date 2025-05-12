@@ -1,0 +1,15 @@
+package templates
+
+templ homeHead() {
+	<title>Home Page</title>
+}
+
+templ HomePage() {
+	@mainLayout(homeHead()) {
+		<div class="flex flex-row justify-center py-5">
+			<div class="w-3/4">
+				<h1 class="text-4xl text-red-500 text-center">Home Page</h1>
+			</div>
+		</div>
+	}
+}

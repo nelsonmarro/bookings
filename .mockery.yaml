@@ -1,0 +1,14 @@
+with-expecter: True
+inpackage: True
+dir: "{{.InterfaceDir}}"
+mockname: "Mock{{.InterfaceName}}"
+outpkg: "{{.PackageName}}"
+filename: "{{.InterfaceName}}_mock.go"
+all: True
+packages:
+  github.com/nelsonmarro/kyber-med/internal/pacient/repositories:
+    config:
+      recursive: True
+  github.com/nelsonmarro/kyber-med/internal/pacient/services:
+    config:
+      recursive: True
