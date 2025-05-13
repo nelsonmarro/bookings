@@ -17,8 +17,6 @@
     --color-purple-300: oklch(82.7% 0.119 306.383);
     --color-purple-500: oklch(62.7% 0.265 303.9);
     --color-purple-600: oklch(55.8% 0.288 302.321);
-    --color-slate-700: oklch(37.2% 0.044 257.287);
-    --color-gray-50: oklch(98.5% 0.002 247.839);
     --color-gray-100: oklch(96.7% 0.003 264.542);
     --color-gray-200: oklch(92.8% 0.006 264.531);
     --color-gray-300: oklch(87.2% 0.01 258.338);
@@ -28,7 +26,6 @@
     --color-gray-700: oklch(37.3% 0.034 259.733);
     --color-gray-800: oklch(27.8% 0.033 256.848);
     --color-gray-900: oklch(21% 0.034 264.665);
-    --color-gray-950: oklch(13% 0.028 261.692);
     --color-neutral-200: oklch(92.2% 0 0);
     --color-black: #000;
     --color-white: #fff;
@@ -401,6 +398,9 @@
   .my-1 {
     margin-block: calc(var(--spacing) * 1);
   }
+  .my-4 {
+    margin-block: calc(var(--spacing) * 4);
+  }
   .my-auto {
     margin-block: auto;
   }
@@ -546,11 +546,20 @@
   .h-6 {
     height: calc(var(--spacing) * 6);
   }
+  .h-6\/12 {
+    height: calc(6/12 * 100%);
+  }
   .h-7 {
     height: calc(var(--spacing) * 7);
   }
   .h-8 {
     height: calc(var(--spacing) * 8);
+  }
+  .h-9 {
+    height: calc(var(--spacing) * 9);
+  }
+  .h-9\/12 {
+    height: calc(9/12 * 100%);
   }
   .h-10 {
     height: calc(var(--spacing) * 10);
@@ -578,6 +587,18 @@
   }
   .h-\[240px\] {
     height: 240px;
+  }
+  .h-\[500px\] {
+    height: 500px;
+  }
+  .h-\[690px\] {
+    height: 690px;
+  }
+  .h-\[700px\] {
+    height: 700px;
+  }
+  .h-\[900px\] {
+    height: 900px;
   }
   .h-auto {
     height: auto;
@@ -771,9 +792,6 @@
   .border-collapse {
     border-collapse: collapse;
   }
-  .origin-center {
-    transform-origin: center;
-  }
   .origin-top-left {
     transform-origin: top left;
   }
@@ -935,9 +953,6 @@
   }
   .place-items-center {
     place-items: center;
-  }
-  .content-center {
-    align-content: center;
   }
   .items-baseline {
     align-items: baseline;
@@ -1492,9 +1507,6 @@
   .pb-8 {
     padding-bottom: calc(var(--spacing) * 8);
   }
-  .pl-3 {
-    padding-left: calc(var(--spacing) * 3);
-  }
   .pl-4 {
     padding-left: calc(var(--spacing) * 4);
   }
@@ -1503,6 +1515,9 @@
   }
   .text-center {
     text-align: center;
+  }
+  .text-justify {
+    text-align: justify;
   }
   .text-left {
     text-align: left;
@@ -2141,13 +2156,6 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-green-800);
-      }
-    }
-  }
-  .hover\:bg-green-900 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-green-900);
       }
     }
   }

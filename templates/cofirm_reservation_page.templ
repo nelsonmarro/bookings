@@ -1,0 +1,84 @@
+package templates
+
+import (
+"github.com/axzilla/templui/component/button"
+"github.com/axzilla/templui/component/form"
+"github.com/axzilla/templui/component/input"
+)
+
+templ headConfirm() {
+<title>Make Reservations</title>
+}
+
+templ ConfirmReservationPage() {
+@MainLayout(headContact()) {
+<div class="flex flex-row justify-center items-center py-5">
+  <div class="w-3/4 h-[690px]">
+    <div>
+      <h1 class="text-3xl font-bold text-center mt-4">Search for Availability</h1>
+      <div class="w-full">
+        <form method="get" action="#" class="flex flex-col space-y-4">
+          @form.Item() {
+          @form.Label(form.LabelProps{
+          For: "firstname",
+          }) {
+          First Name
+          }
+          @input.Input(input.Props{
+          ID: "firstname",
+          Type: input.TypeText,
+          Placeholder: "First Name",
+          },
+          )
+          }
+          @form.Item() {
+          @form.Label(form.LabelProps{
+          For: "lastname",
+          }) {
+          End Date
+          }
+          @input.Input(input.Props{
+          ID: "lastname",
+          Type: input.TypeText,
+          Placeholder: "Last Name",
+          },
+          )
+          }
+          @form.Item() {
+          @form.Label(form.LabelProps{
+          For: "email",
+          }) {
+          Email
+          }
+          @input.Input(input.Props{
+          ID: "email",
+          Type: input.TypeEmail,
+          Placeholder: "Email",
+          },
+          )
+          }
+          @form.Item() {
+          @form.Label(form.LabelProps{
+          For: "phonenumber",
+          }) {
+          Phone Number
+          }
+          @input.Input(input.Props{
+          ID: "phonenumber",
+          Type: input.TypeText,
+          Placeholder: "Phone Number",
+          },
+          )
+          }
+          @button.Button(button.Props{
+          Type: button.TypeSubmit,
+          }) {
+          Confirm Reservation
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+}
+}

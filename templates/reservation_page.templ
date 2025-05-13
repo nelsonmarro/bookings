@@ -1,22 +1,58 @@
 package templates
 
+import (
+"github.com/axzilla/templui/component/button"
+"github.com/axzilla/templui/component/datepicker"
+"github.com/axzilla/templui/component/form"
+)
+
 templ headReservation() {
-	<title>Make Reservations</title>
+<title>Make Reservations</title>
 }
 
 templ ReservationPage() {
-	@MainLayout(headContact()) {
-		<div class="flex flex-row justify-center items-center py-5">
-			<div class="w-3/4">
-				<div>
-					<h1 class="text-3xl font-bold text-center mt-4">Reservations Page</h1>
-					<p class="text-justify mt-2">
-						Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia obcaecati corrupti unde repellendus
-						consequuntur modi asperiores nesciunt, ipsum commodi fugit exercitationem vel, vero aliquam impedit. Dolorum qui
-						distinctio soluta id. lorem ipsum dolor sit amet consectetur adipisicing elit
-					</p>
-				</div>
-			</div>
-		</div>
-	}
+@MainLayout(headContact()) {
+<div class="flex flex-row justify-center items-center py-5">
+  <div class="w-3/4 h-[690px]">
+    <div>
+      <h1 class="text-3xl font-bold text-center mt-4">Search for Availability</h1>
+      <div class="w-full">
+        <form method="get" action="#" class="flex flex-col space-y-4">
+          @form.Item() {
+          @form.Label(form.LabelProps{
+          For: "startdate",
+          }) {
+          Start Date
+          }
+          @datepicker.DatePicker(datepicker.Props{
+          HasError: false,
+          ID: "startdate",
+          })
+          <!-- @form.Message(form.MessageProps{ -->
+          <!-- Variant: form.MessageVariantError, -->
+          <!-- }) { -->
+          <!-- Select a valid date -->
+          <!-- } -->
+          }
+          @form.Item() {
+          @form.Label(form.LabelProps{
+          For: "enddate",
+          }) {
+          End Date
+          }
+          @datepicker.DatePicker(datepicker.Props{
+          ID: "enddate",
+          })
+          }
+          @button.Button(button.Props{
+          Type: button.TypeSubmit,
+          }) {
+          Search Availability
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+}
 }
