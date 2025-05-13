@@ -10,6 +10,7 @@ This is the repo for my bookings and reservations project
 - Uses [nosurf](https://github.com/justinas/nosurf) for CSRF management
 - template engine using [templ](https://github.com/a-h/templ)
 - Tailwindcss v4
+- UI components using [templui](https://templui.io/docs)
 
 ## Setup and Run
 

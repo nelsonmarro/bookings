@@ -1,0 +1,40 @@
+package components
+
+import (
+	"github.com/axzilla/templui/component/aspectratio"
+	"github.com/axzilla/templui/component/carousel"
+)
+
+templ CarouselWithImages() {
+	@carousel.Carousel(carousel.Props{
+		Autoplay: true,
+		Interval: 5000,
+		Loop:     true,
+		Class:    "rounded-md overflow-hidden shadow-md",
+	}) {
+		@carousel.Content() {
+			@carousel.Item() {
+				@ImageSlide("/static/img/outside.png", "Image 1")
+			}
+			@carousel.Item() {
+				@ImageSlide("/static/img/tray.png", "Image 2")
+			}
+			@carousel.Item() {
+				@ImageSlide("/static/img/woman-laptop.png", "Image 3")
+			}
+		}
+		@carousel.Previous()
+		@carousel.Next()
+		@carousel.Indicators(carousel.IndicatorsProps{
+			Count: 3,
+		})
+	}
+}
+
+templ ImageSlide(src string, alt string) {
+	@aspectratio.AspectRatio(aspectratio.Props{
+		Ratio: aspectratio.RatioVideo,
+	}) {
+		<img src={ src } alt={ alt } class="w-full h-full object-cover"/>
+	}
+}

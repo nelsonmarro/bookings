@@ -1,14 +1,31 @@
 package templates
 
+import "github.com/nelsonmarro/bookings/templates/components"
+import "github.com/axzilla/templui/component/button"
+
 templ homeHead() {
 	<title>Home Page</title>
 }
 
 templ HomePage() {
-	@mainLayout(homeHead()) {
-		<div class="flex flex-row justify-center py-5">
+	@MainLayout(homeHead()) {
+		<div class="flex flex-row justify-center items-center py-5">
 			<div class="w-3/4">
-				<h1 class="text-4xl text-red-500 text-center">Home Page</h1>
+				@components.CarouselWithImages()
+				<div>
+					<h1 class="text-3xl font-bold text-center mt-4">Welcome to Our Booking Site</h1>
+					<p class="text-lg text-center mt-2">
+						Your home awaw from home. set on majestic waters of the Atlantic Ocean, this will be a vacation to remember.
+					</p>
+				</div>
+				<div class="flex justify-center mt-4 space-x-3">
+					@button.Button(button.Props{
+						Href:  "/make-reservation",
+						Class: "bg-green-700 text-white hover:bg-green-800 text-lg",
+					}) {
+						Make Reservation Now
+					}
+				</div>
 			</div>
 		</div>
 	}

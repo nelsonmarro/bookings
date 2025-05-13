@@ -1,22 +1,39 @@
 package templates
 
+import "github.com/nelsonmarro/bookings/templates/components"
+
 templ headSection(contents templ.Component) {
-	<head>
-		<meta charset="UTF-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<link rel="stylesheet" href="/static/css/styles.css"/>
-		@contents
-	</head>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  @contents
+</head>
 }
 
-templ mainLayout(headContent templ.Component) {
-	<!DOCTYPE html>
-	<html lang="en">
-		@headSection(headContent)
-		<body>
-			<div>
-				{ children... }
-			</div>
-		</body>
-	</html>
+templ MainLayout(headContent templ.Component) {
+<!DOCTYPE html>
+<html lang="en">
+@headSection(headContent)
+
+<body class="dark">
+  <header>
+    @components.Header()
+  </header>
+  <div>
+    { children... }
+  </div>
+  <footer class="py-5 bg-gray-800 text-white">
+    <div class="grid grid-cols-3">
+      <div class="text-center">Left</div>
+      <div class="text-center">Middle</div>
+      <div class="text-center">Right</div>
+    </div>
+  </footer>
+  <script type="module" src="/static/js/app.js" defer></script>
+</body>
+
+</html>
 }

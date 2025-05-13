@@ -1,0 +1,39 @@
+package rooms
+
+import (
+	"github.com/axzilla/templui/component/button"
+	"github.com/nelsonmarro/bookings/templates"
+)
+
+templ headSingle() {
+	<title>Single Room</title>
+}
+
+templ SingleRoomPage() {
+	@templates.MainLayout(headSingle()) {
+		<div class="flex flex-row justify-center items-center py-5">
+			<div class="w-3/4">
+				<div class="flex justify-center items-center my-4">
+					<img src="/static/img/single-room.png" alt="Single Room" class="w-3/4 h-auto rounded-lg shadow-lg"/>
+				</div>
+				<div>
+					<h1 class="text-3xl font-bold text-center mt-4">Single Room</h1>
+					<p class="text-justify mt-2">
+						Your home awaw from home. set on majestic waters of the Atlantic Ocean, this will be a vacation to remember.
+						Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, ducimus. Accusamus placeat quisquam nesciunt
+						animi quos sapiente iusto nostrum dolorum reprehenderit sequi, error soluta porro numquam eligendi saepe earum
+						temporibus?. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+					</p>
+				</div>
+				<div class="flex justify-center mt-4 space-x-3">
+					@button.Button(button.Props{
+						Href:  "/make-reservation-single",
+						Class: "bg-green-700 text-white hover:bg-green-800 text-lg",
+					}) {
+						Check Availability
+					}
+				</div>
+			</div>
+		</div>
+	}
+}
