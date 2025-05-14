@@ -33,10 +33,14 @@ func Routes(app *config.AppConfig) http.Handler {
 
 	mux.Get("/reservation", reservationPageHandler.Get)
 	mux.Post("/reservation", reservationPageHandler.Post)
+	mux.Post("/reservation-json", reservationPageHandler.PostJson)
 
 	singleRoomHandler := rooms.NewSingleRoomHandler(app)
 	mux.Get("/rooms/single", singleRoomHandler.Get)
 	mux.Post("/rooms/single", singleRoomHandler.Post)
+
+	confirmReservationHandler := handlers.NewConfirmReservationHandler(app)
+	mux.Get("/reservation/confirmation", confirmReservationHandler.Get)
 
 	mux.Handle("GET /rooms/double", rooms.NewDoubleRoomHandler(app))
 

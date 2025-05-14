@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -8,6 +10,7 @@ import (
 	"github.com/justinas/nosurf"
 
 	"github.com/nelsonmarro/bookings/config"
+	"github.com/nelsonmarro/bookings/internal/models"
 	"github.com/nelsonmarro/bookings/templates"
 )
 
@@ -102,12 +105,25 @@ func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// --- All Validations Passed ---
-	// Here you would:
-	// 1. Check availability using a service/repository with parsedStartDate, parsedEndDate.
-	// 2. If not available, add to vm.FormErrors["general"] = "Not available" and re-render.
-	// 3. If available, potentially create a pending reservation or proceed to payment.
-
-	// For now, let's assume success and redirect (PRG pattern)
 	h.app.Session.Put(r.Context(), "flash_success", "Your availability check was successful!") // Example flash message
 	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)                              // Redirect back or to a summary page
+}
+
+func (h *ReservationpageHandler) PostJson(w http.ResponseWriter, r *http.Request) {
+	resp := models.JsonResponse{
+		Ok:      true,
+		Message: "Reservation request received",
+	}
+
+	out, err := json.MarshalIndent(resp, "", "    ")
+	if err != nil {
+		log.Println("Error marshalling JSON:", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(out)
+	if err != nil {
+		log.Println("Error writing response:", err)
+	}
 }
