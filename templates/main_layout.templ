@@ -13,7 +13,14 @@ templ headSection(contents templ.Component) {
 </head>
 }
 
-templ MainLayout(headContent templ.Component) {
+templ scriptsSection(scripts ...templ.Component) {
+<script type="module" src="/static/js/app.js" defer></script>
+for _, scriptComponent := range scripts {
+@scriptComponent
+}
+}
+
+templ MainLayout(headContent templ.Component, scripts ...templ.Component) {
 <!DOCTYPE html>
 <html lang="en">
 @headSection(headContent)
@@ -32,7 +39,7 @@ templ MainLayout(headContent templ.Component) {
       <div class="text-center">Right</div>
     </div>
   </footer>
-  <script type="module" src="/static/js/app.js" defer></script>
+  @scriptsSection(scripts...)
 </body>
 
 </html>

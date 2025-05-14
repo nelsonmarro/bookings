@@ -1,16 +1,37 @@
 package rooms
 
 import (
+	"github.com/axzilla/templui/component/alert"
 	"github.com/axzilla/templui/component/button"
+	"github.com/axzilla/templui/component/datepicker"
+	"github.com/axzilla/templui/component/form"
+	"github.com/axzilla/templui/component/modal"
+	"github.com/axzilla/templui/icon"
+	"github.com/nelsonmarro/bookings/internal/models"
 	"github.com/nelsonmarro/bookings/templates"
 )
 
-templ headSingle() {
-	<title>Single Room</title>
+templ headContent() {
+	<title>Home Page</title>
 }
 
-templ SingleRoomPage() {
-	@templates.MainLayout(headSingle()) {
+templ scriptSingleRoom() {
+	<script defer>
+  const myButton = document.getElementById('error-btn'); // Or use querySelector, etc.
+  if (myButton) {
+    myButton.click();
+  }
+</script>
+}
+
+type SingleRoomPageVM struct {
+	models.ReservationCheck
+	FormErrors map[string]string
+	CSRFToken  string
+}
+
+templ SingleRoomPage(vm *SingleRoomPageVM) {
+	@templates.MainLayout(headContent(), scriptSingleRoom()) {
 		<div class="flex flex-row justify-center items-center py-5">
 			<div class="w-3/4">
 				<div class="flex justify-center items-center my-4">
@@ -26,11 +47,117 @@ templ SingleRoomPage() {
 					</p>
 				</div>
 				<div class="flex justify-center mt-4 space-x-3">
-					@button.Button(button.Props{
-						Href:  "/make-reservation-single",
-						Class: "bg-green-700 text-white hover:bg-green-800 text-lg",
+					if len( vm.FormErrors) > 0 {
+						@modal.Trigger(modal.TriggerProps{
+							ModalID: "default-modal",
+						}) {
+							@button.Button(button.Props{
+								ID:    "error-btn",
+								Class: "hidden",
+							}) {
+							}
+						}
+					}
+					@modal.Trigger(modal.TriggerProps{
+						ModalID: "default-modal",
 					}) {
-						Check Availability
+						@button.Button(button.Props{
+							Class: "bg-green-700 text-white hover:bg-green-800 text-lg",
+						}) {
+							Check Availability
+						}
+					}
+					@modal.Modal(modal.Props{
+						ID:               "default-modal",
+						Class:            "max-w-md",
+						DisableClickAway: true,
+						DisableESC:       true,
+					}) {
+						@modal.Header() {
+							Check Availability
+						}
+						@modal.Body() {
+							<div class="w-full">
+								<form method="POST" action="/rooms/single" class="flex flex-col space-y-4">
+									<input type="hidden" name="csrf_token" value={ vm.CSRFToken }/>
+									@form.Item() {
+										@form.Label(form.LabelProps{
+											For: "startdate",
+										}) {
+											Start Date
+										}
+										@datepicker.DatePicker(datepicker.Props{
+											HasError: false,
+											ID:       "startdate",
+											Name:     "startdate",
+											Value:    vm.StartDate,
+										})
+										if vm.FormErrors["startdate"] != "" {
+											@form.Message(form.MessageProps{
+												Variant: form.MessageVariantError,
+											}) {
+												Select a valid date
+											}
+										}
+									}
+									@form.Item() {
+										@form.Label(form.LabelProps{
+											For: "enddate",
+										}) {
+											End Date
+										}
+										@datepicker.DatePicker(datepicker.Props{
+											ID:    "enddate",
+											Name:  "enddate",
+											Value: vm.EndDate,
+										})
+										if vm.FormErrors["enddate"] != "" {
+											@form.Message(form.MessageProps{
+												Variant: form.MessageVariantError,
+											}) {
+												Select a valid date
+											}
+										}
+									}
+									@button.Button(button.Props{
+										Type: button.TypeSubmit,
+									}) {
+										Search Availability
+									}
+								</form>
+							</div>
+							if len(vm.FormErrors) > 0 {
+								<div class="pt-5">
+									@alert.Alert(alert.Props{Variant: alert.VariantDestructive}) {
+										@icon.TriangleAlert(icon.Props{Size: 16})
+										@alert.Title() {
+											Error
+										}
+										@alert.Description() {
+											Errors occurred while processing your request:
+											<ul class="list-disc">
+												for _,v := range vm.FormErrors {
+													<li>{ v }</li>
+												}
+											</ul>
+										}
+									}
+								</div>
+							} else {
+								@modal.Close()
+							}
+						}
+						@modal.Footer() {
+							<div class="flex gap-2">
+								@modal.Close(modal.CloseProps{
+									ModalID: "default-modal",
+								}) {
+									@button.Button() {
+										Cancel
+									}
+								}
+							</div>
+						}
 					}
 				</div>
 			</div>

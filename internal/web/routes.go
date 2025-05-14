@@ -22,16 +22,22 @@ func Routes(app *config.AppConfig) http.Handler {
 	mux.Use(func(next http.Handler) http.Handler {
 		return middlewares.SessionLoad(next, app)
 	})
-
 	fs := http.FileServer(http.Dir("./static"))
 	mux.Handle("/static/*", http.StripPrefix("/static/", fs))
 
 	mux.Handle("GET /", handlers.NewHomepageHandler(app))
 	mux.Handle("GET /about", handlers.NewAboutpageHandler(app))
 	mux.Handle("GET /contact", handlers.NewContactpageHandler(app))
-	mux.Handle("GET /make-reservation", handlers.NewReservationpageHandler(app))
 
-	mux.Handle("GET /rooms/single", rooms.NewSingleRoomHandler(app))
+	reservationPageHandler := handlers.NewReservationpageHandler(app)
+
+	mux.Get("/reservation", reservationPageHandler.Get)
+	mux.Post("/reservation", reservationPageHandler.Post)
+
+	singleRoomHandler := rooms.NewSingleRoomHandler(app)
+	mux.Get("/rooms/single", singleRoomHandler.Get)
+	mux.Post("/rooms/single", singleRoomHandler.Post)
+
 	mux.Handle("GET /rooms/double", rooms.NewDoubleRoomHandler(app))
 
 	return mux
