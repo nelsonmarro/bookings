@@ -1,14 +1,28 @@
 package templates
 
-import "github.com/nelsonmarro/bookings/templates/components"
-import "github.com/axzilla/templui/component/button"
+import (
+	"github.com/axzilla/templui/component/button"
+	"github.com/nelsonmarro/bookings/internal/models"
+	"github.com/nelsonmarro/bookings/templates/components"
+)
 
 templ homeHead() {
 	<title>Home Page</title>
 }
 
-templ HomePage() {
+type HomePageVM struct {
+	models.BaseViewModel
+}
+
+func NewHomePageVM() *HomePageVM {
+	return &HomePageVM{
+		BaseViewModel: models.BaseViewModel{},
+	}
+}
+
+templ HomePage(vm *HomePageVM) {
 	@MainLayout(homeHead()) {
+		@components.Toast(vm.MessageType, vm.Message)
 		<div class="flex flex-row justify-center items-center py-5">
 			<div class="w-3/4">
 				@components.CarouselWithImages()

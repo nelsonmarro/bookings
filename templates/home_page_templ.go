@@ -8,8 +8,11 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/nelsonmarro/bookings/templates/components"
-import "github.com/axzilla/templui/component/button"
+import (
+	"github.com/axzilla/templui/component/button"
+	"github.com/nelsonmarro/bookings/internal/models"
+	"github.com/nelsonmarro/bookings/templates/components"
+)
 
 func homeHead() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -40,7 +43,17 @@ func homeHead() templ.Component {
 	})
 }
 
-func HomePage() templ.Component {
+type HomePageVM struct {
+	models.BaseViewModel
+}
+
+func NewHomePageVM() *HomePageVM {
+	return &HomePageVM{
+		BaseViewModel: models.BaseViewModel{},
+	}
+}
+
+func HomePage(vm *HomePageVM) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -73,7 +86,11 @@ func HomePage() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex flex-row justify-center items-center py-5\"><div class=\"w-3/4\">")
+			templ_7745c5c3_Err = components.Toast(vm.MessageType, vm.Message).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " <div class=\"flex flex-row justify-center items-center py-5\"><div class=\"w-3/4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

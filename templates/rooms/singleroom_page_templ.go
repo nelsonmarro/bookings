@@ -78,9 +78,18 @@ func scriptSingleRoom() templ.Component {
 }
 
 type SingleRoomPageVM struct {
+	models.BaseViewModel
 	models.ReservationCheck
-	FormErrors map[string]string
-	CSRFToken  string
+}
+
+func NewSingleRoomPageVM(csrfToken string) *SingleRoomPageVM {
+	return &SingleRoomPageVM{
+		BaseViewModel: models.BaseViewModel{
+			Form:       new(models.Form),
+			FormErrors: make(models.Errors),
+			CSRFToken:  csrfToken,
+		},
+	}
 }
 
 func SingleRoomPage(vm *SingleRoomPageVM) templ.Component {
@@ -264,7 +273,7 @@ func SingleRoomPage(vm *SingleRoomPageVM) templ.Component {
 					var templ_7745c5c3_Var12 string
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(vm.CSRFToken)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/rooms/singleroom_page.templ`, Line: 78, Col: 69}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/rooms/singleroom_page.templ`, Line: 87, Col: 68}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
@@ -327,7 +336,7 @@ func SingleRoomPage(vm *SingleRoomPageVM) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						if vm.FormErrors["startdate"] != "" {
+						if len(vm.Form.Errors["startdate"]) > 0 {
 							templ_7745c5c3_Var15 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 								templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 								templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -411,7 +420,7 @@ func SingleRoomPage(vm *SingleRoomPageVM) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						if vm.FormErrors["enddate"] != "" {
+						if len(vm.Form.Errors["enddate"]) > 0 {
 							templ_7745c5c3_Var18 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 								templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 								templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -471,7 +480,7 @@ func SingleRoomPage(vm *SingleRoomPageVM) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if len(vm.FormErrors) > 0 {
+					if len(vm.Form.Errors) > 0 {
 						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"pt-5\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
@@ -538,15 +547,15 @@ func SingleRoomPage(vm *SingleRoomPageVM) templ.Component {
 								if templ_7745c5c3_Err != nil {
 									return templ_7745c5c3_Err
 								}
-								for _, v := range vm.FormErrors {
+								for _, v := range vm.Form.Errors {
 									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<li>")
 									if templ_7745c5c3_Err != nil {
 										return templ_7745c5c3_Err
 									}
 									var templ_7745c5c3_Var23 string
-									templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(v)
+									templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(v[0])
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/rooms/singleroom_page.templ`, Line: 136, Col: 17}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/rooms/singleroom_page.templ`, Line: 145, Col: 23}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 									if templ_7745c5c3_Err != nil {

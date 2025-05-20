@@ -1,8 +1,8 @@
 package models
 
-import "time"
-
-type ReservationCheck struct {
-	StartDate time.Time
-	EndDate   time.Time
+type Reservation struct {
+	FirstName   string
+	LastName    string
+	Email       string
+	PhoneNumber string
 }

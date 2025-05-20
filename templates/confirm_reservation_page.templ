@@ -4,6 +4,7 @@ import (
 	"github.com/axzilla/templui/component/button"
 	"github.com/axzilla/templui/component/form"
 	"github.com/axzilla/templui/component/input"
+	"github.com/nelsonmarro/bookings/internal/models"
 )
 
 templ headConfirm() {
@@ -11,8 +12,17 @@ templ headConfirm() {
 }
 
 type ConfirmReservationPageVM struct {
-	FormErrors map[string]string
-	CSRFToken  string
+	Reservation models.Reservation
+	models.BaseViewModel
+}
+
+func NewConfirmReservationPageVM() *ConfirmReservationPageVM {
+	return &ConfirmReservationPageVM{
+		BaseViewModel: models.BaseViewModel{
+			Form:      new(models.Form),
+			CSRFToken: "",
+		},
+	}
 }
 
 templ ConfirmReservationPage(vm *ConfirmReservationPageVM) {
@@ -22,33 +32,53 @@ templ ConfirmReservationPage(vm *ConfirmReservationPageVM) {
 				<div>
 					<h1 class="text-3xl font-bold text-center mt-4">Confirm Reservation</h1>
 					<div class="w-full">
-						<form method="get" action="#" class="flex flex-col space-y-4">
+						<form method="post" action="/reservation/confirmation" class="flex flex-col space-y-4">
 							<input type="hidden" name="csrf_token" value={ vm.CSRFToken }/>
 							@form.Item() {
 								@form.Label(form.LabelProps{
-									For: "firstname",
+									For: "first_name",
 								}) {
 									First Name
 								}
 								@input.Input(input.Props{
-									ID:          "firstname",
+									HasError:    vm.Form.Errors.HasField("first_name"),
+									ID:          "first_name",
+									Name:        "first_name",
 									Type:        input.TypeText,
 									Placeholder: "First Name",
+									Value:       vm.Reservation.FirstName,
 								},
 								)
+								if len(vm.Form.Errors["first_name"]) > 0 {
+									@form.Message(form.MessageProps{
+										Variant: form.MessageVariantError,
+									}) {
+										{ vm.Form.Errors.Get("first_name") }
+									}
+								}
 							}
 							@form.Item() {
 								@form.Label(form.LabelProps{
-									For: "lastname",
+									For: "last_name",
 								}) {
 									Last Name
 								}
 								@input.Input(input.Props{
-									ID:          "lastname",
+									HasError:    vm.Form.Errors.HasField("last_name"),
+									ID:          "last_name",
+									Name:        "last_name",
 									Type:        input.TypeText,
 									Placeholder: "Last Name",
+									Value:       vm.Reservation.LastName,
 								},
 								)
+								if len(vm.Form.Errors["last_name"]) > 0 {
+									@form.Message(form.MessageProps{
+										Variant: form.MessageVariantError,
+									}) {
+										{ vm.Form.Errors.Get("last_name") }
+									}
+								}
 							}
 							@form.Item() {
 								@form.Label(form.LabelProps{
@@ -57,22 +87,34 @@ templ ConfirmReservationPage(vm *ConfirmReservationPageVM) {
 									Email
 								}
 								@input.Input(input.Props{
+									HasError:    vm.Form.Errors.HasField("email"),
 									ID:          "email",
+									Name:        "email",
 									Type:        input.TypeEmail,
 									Placeholder: "Email",
+									Value:       vm.Reservation.Email,
 								},
 								)
+								if len(vm.Form.Errors["email"]) > 0 {
+									@form.Message(form.MessageProps{
+										Variant: form.MessageVariantError,
+									}) {
+										{ vm.Form.Errors.Get("email") }
+									}
+								}
 							}
 							@form.Item() {
 								@form.Label(form.LabelProps{
-									For: "phonenumber",
+									For: "phone_number",
 								}) {
 									Phone Number
 								}
 								@input.Input(input.Props{
-									ID:          "phonenumber",
+									ID:          "phone_number",
+									Name:        "phone_number",
 									Type:        input.TypeText,
 									Placeholder: "Phone Number",
+									Value:       vm.Reservation.PhoneNumber,
 								},
 								)
 							}

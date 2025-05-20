@@ -27,10 +27,8 @@ func NewReservationpageHandler(app *config.AppConfig) *ReservationpageHandler {
 }
 
 func (h *ReservationpageHandler) Get(w http.ResponseWriter, r *http.Request) {
-	vm := &templates.ReservationPageVM{
-		FormErrors: make(map[string]string),
-		CSRFToken:  nosurf.Token(r), // Get the CSRF token from the request
-	}
+	vm := templates.NewReservationPageVM(nosurf.Token(r))
+
 	reservation := templates.ReservationPage(vm)
 	err := reservation.Render(r.Context(), w)
 	if err != nil {
@@ -46,9 +44,7 @@ func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := &templates.ReservationPageVM{
-		FormErrors: make(map[string]string),
-	}
+	vm := templates.NewReservationPageVM("")
 
 	startDateStr := r.FormValue("startdate")
 	endDateStr := r.FormValue("enddate")
@@ -59,11 +55,11 @@ func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 
 	// Process Start Date
 	if strings.TrimSpace(startDateStr) == "" {
-		vm.FormErrors["startdate"] = "Start date is required"
+		vm.Form.Errors.Add("startdate", "Start date is required")
 	} else {
 		t, parseErr := time.Parse(htmlDateLayout, startDateStr)
 		if parseErr != nil {
-			vm.FormErrors["startdate"] = "Invalid start date format. Please select a valid date."
+			vm.Form.Errors.Add("startdate", "Invalid start date format. Please select a valid date.")
 		} else {
 			vm.StartDate = t
 			parsedStartDate = t
@@ -73,11 +69,11 @@ func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 
 	// --- Process End Date ---
 	if strings.TrimSpace(endDateStr) == "" {
-		vm.FormErrors["enddate"] = "End date is required."
+		vm.Form.Errors.Add("enddate", "End date is required.")
 	} else {
 		t, parseErr := time.Parse(htmlDateLayout, endDateStr)
 		if parseErr != nil {
-			vm.FormErrors["enddate"] = "Invalid end date format. Please select a valid date."
+			vm.Form.Errors.Add("enddate", "Invalid end date format. Please select a valid date.")
 		} else {
 			vm.EndDate = t // Set for re-populating the form
 			parsedEndDate = t
@@ -88,11 +84,12 @@ func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 	// --- Cross-Field Validation ---
 	if isValidStartDate && isValidEndDate {
 		if parsedStartDate.After(parsedEndDate) {
-			vm.FormErrors["enddate"] = "End date must be after start date."
+			vm.Form.Errors.Add("enddate", "End date must be after start date.")
 		}
 	}
 
-	if len(vm.FormErrors) > 0 {
+	// TODO:Fix validation logic
+	if len(vm.Form.Errors) > 0 {
 		// Render the form with errors
 		w.WriteHeader(http.StatusBadRequest)
 		vm.CSRFToken = nosurf.Token(r)
@@ -106,7 +103,7 @@ func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 	// --- All Validations Passed ---
 	h.app.Session.Put(r.Context(), "flash_success", "Your availability check was successful!") // Example flash message
-	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)                              // Redirect back or to a summary page
+	http.Redirect(w, r, "/reservation/confirmation", http.StatusSeeOther)                      // Redirect back or to a summary page
 }
 
 func (h *ReservationpageHandler) PostJson(w http.ResponseWriter, r *http.Request) {

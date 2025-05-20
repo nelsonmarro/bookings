@@ -76,9 +76,18 @@ func scriptsReservation() templ.Component {
 }
 
 type ReservationPageVM struct {
+	models.BaseViewModel
 	models.ReservationCheck
-	FormErrors map[string]string
-	CSRFToken  string
+}
+
+func NewReservationPageVM(csrfToken string) *ReservationPageVM {
+	return &ReservationPageVM{
+		BaseViewModel: models.BaseViewModel{
+			Form:       new(models.Form),
+			FormErrors: make(models.Errors),
+			CSRFToken:  csrfToken,
+		},
+	}
 }
 
 func ReservationPage(vm *ReservationPageVM) templ.Component {
@@ -114,14 +123,14 @@ func ReservationPage(vm *ReservationPageVM) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex flex-row justify-center items-center py-5\"><div class=\"w-3/4 h-[690px]\"><div><h1 class=\"text-3xl font-bold text-center mt-4\">Search for Availability</h1><div class=\"w-full\"><form method=\"POST\" action=\"/reservation\" class=\"flex flex-col space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex flex-row justify-center items-center py-5\"><div class=\"w-3/4 h-[690px]\"><div><h1 class=\"text-3xl font-bold text-center mt-4\">Search for Availability</h1><div class=\"w-full\"><form method=\"post\" action=\"/reservation\" class=\"flex flex-col space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(vm.CSRFToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/reservation_page.templ`, Line: 34, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/reservation_page.templ`, Line: 43, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -184,7 +193,7 @@ func ReservationPage(vm *ReservationPageVM) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if vm.FormErrors["startdate"] != "" {
+				if len(vm.Form.Errors["startdate"]) > 0 {
 					templ_7745c5c3_Var8 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 						templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 						templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -268,7 +277,7 @@ func ReservationPage(vm *ReservationPageVM) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if vm.FormErrors["enddate"] != "" {
+				if len(vm.Form.Errors["enddate"]) > 0 {
 					templ_7745c5c3_Var11 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 						templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 						templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -328,7 +337,7 @@ func ReservationPage(vm *ReservationPageVM) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if len(vm.FormErrors) > 0 {
+			if len(vm.Form.Errors) > 0 {
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"pt-5\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -395,15 +404,15 @@ func ReservationPage(vm *ReservationPageVM) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						for _, v := range vm.FormErrors {
+						for _, v := range vm.Form.Errors {
 							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<li>")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 							var templ_7745c5c3_Var16 string
-							templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(v)
+							templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(v[0])
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/reservation_page.templ`, Line: 92, Col: 17}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/reservation_page.templ`, Line: 101, Col: 21}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 							if templ_7745c5c3_Err != nil {

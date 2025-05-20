@@ -23,10 +23,7 @@ func NewSingleRoomHandler(app *config.AppConfig) *SingleRoomHandler {
 }
 
 func (h *SingleRoomHandler) Get(w http.ResponseWriter, r *http.Request) {
-	vm := &rooms.SingleRoomPageVM{
-		FormErrors: make(map[string]string),
-		CSRFToken:  nosurf.Token(r), // Get the CSRF token from the request
-	}
+	vm := rooms.NewSingleRoomPageVM(nosurf.Token(r))
 
 	singleRoom := rooms.SingleRoomPage(vm)
 	err := singleRoom.Render(r.Context(), w)
@@ -43,9 +40,7 @@ func (h *SingleRoomHandler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vm := &rooms.SingleRoomPageVM{
-		FormErrors: make(map[string]string),
-	}
+	vm := rooms.NewSingleRoomPageVM(nosurf.Token(r))
 
 	startDateStr := r.FormValue("startdate")
 	endDateStr := r.FormValue("enddate")
@@ -56,11 +51,11 @@ func (h *SingleRoomHandler) Post(w http.ResponseWriter, r *http.Request) {
 
 	// Process Start Date
 	if strings.TrimSpace(startDateStr) == "" {
-		vm.FormErrors["startdate"] = "Start date is required"
+		vm.Form.Errors.Add("startdate", "Start date is required")
 	} else {
 		t, parseErr := time.Parse(htmlDateLayout, startDateStr)
 		if parseErr != nil {
-			vm.FormErrors["startdate"] = "Invalid start date format. Please select a valid date."
+			vm.Form.Errors.Add("startdate", "Invalid start date format. Please select a valid date.")
 		} else {
 			vm.StartDate = t
 			parsedStartDate = t
@@ -70,11 +65,11 @@ func (h *SingleRoomHandler) Post(w http.ResponseWriter, r *http.Request) {
 
 	// --- Process End Date ---
 	if strings.TrimSpace(endDateStr) == "" {
-		vm.FormErrors["enddate"] = "End date is required."
+		vm.Form.Errors.Add("enddate", "End date is required.")
 	} else {
 		t, parseErr := time.Parse(htmlDateLayout, endDateStr)
 		if parseErr != nil {
-			vm.FormErrors["enddate"] = "Invalid end date format. Please select a valid date."
+			vm.Form.Errors.Add("enddate", "Invalid end date format. Please select a valid date.")
 		} else {
 			vm.EndDate = t // Set for re-populating the form
 			parsedEndDate = t
@@ -85,7 +80,7 @@ func (h *SingleRoomHandler) Post(w http.ResponseWriter, r *http.Request) {
 	// --- Cross-Field Validation ---
 	if isValidStartDate && isValidEndDate {
 		if parsedStartDate.After(parsedEndDate) {
-			vm.FormErrors["enddate"] = "End date must be after start date."
+			vm.Form.Errors.Add("enddate", "End date must be after start date.")
 		}
 	}
 
@@ -102,12 +97,6 @@ func (h *SingleRoomHandler) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// --- All Validations Passed ---
-	// Here you would:
-	// 1. Check availability using a service/repository with parsedStartDate, parsedEndDate.
-	// 2. If not available, add to vm.FormErrors["general"] = "Not available" and re-render.
-	// 3. If available, potentially create a pending reservation or proceed to payment.
-
-	// For now, let's assume success and redirect (PRG pattern)
 	h.app.Session.Put(r.Context(), "flash_success", "Your availability check was successful!") // Example flash message
 	http.Redirect(w, r, "/make-reservation", http.StatusSeeOther)                              // Redirect back or to a summary page
 }

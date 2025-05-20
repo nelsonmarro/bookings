@@ -1,162 +1,171 @@
 package rooms
 
 import (
-"github.com/axzilla/templui/component/alert"
-"github.com/axzilla/templui/component/button"
-"github.com/axzilla/templui/component/datepicker"
-"github.com/axzilla/templui/component/form"
-"github.com/axzilla/templui/component/modal"
-"github.com/axzilla/templui/icon"
-"github.com/nelsonmarro/bookings/internal/models"
-"github.com/nelsonmarro/bookings/templates"
+	"github.com/axzilla/templui/component/alert"
+	"github.com/axzilla/templui/component/button"
+	"github.com/axzilla/templui/component/datepicker"
+	"github.com/axzilla/templui/component/form"
+	"github.com/axzilla/templui/component/modal"
+	"github.com/axzilla/templui/icon"
+	"github.com/nelsonmarro/bookings/internal/models"
+	"github.com/nelsonmarro/bookings/templates"
 )
 
 templ headContent() {
-<title>Home Page</title>
+	<title>Home Page</title>
 }
 
 templ scriptSingleRoom() {
-<script src="/static/js/rooms/single-room.js" defer>
+	<script src="/static/js/rooms/single-room.js" defer>
 </script>
 }
 
 type SingleRoomPageVM struct {
-models.ReservationCheck
-FormErrors map[string]string
-CSRFToken string
+	models.BaseViewModel
+	models.ReservationCheck
+}
+
+func NewSingleRoomPageVM(csrfToken string) *SingleRoomPageVM {
+	return &SingleRoomPageVM{
+		BaseViewModel: models.BaseViewModel{
+			Form:       new(models.Form),
+			FormErrors: make(models.Errors),
+			CSRFToken:  csrfToken,
+		},
+	}
 }
 
 templ SingleRoomPage(vm *SingleRoomPageVM) {
-@templates.MainLayout(headContent(), scriptSingleRoom()) {
-<div class="flex flex-row justify-center items-center py-5">
-  <div class="w-3/4">
-    <div class="flex justify-center items-center my-4">
-      <img src="/static/img/single-room.png" alt="Single Room" class="w-3/4 h-auto rounded-lg shadow-lg" />
-    </div>
-    <div>
-      <h1 class="text-3xl font-bold text-center mt-4">Single Room</h1>
-      <p class="text-justify mt-2">
-        Your home awaw from home. set on majestic waters of the Atlantic Ocean, this will be a vacation to remember.
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, ducimus. Accusamus placeat quisquam nesciunt
-        animi quos sapiente iusto nostrum dolorum reprehenderit sequi, error soluta porro numquam eligendi saepe earum
-        temporibus?. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-      </p>
-    </div>
-    <div class="flex justify-center mt-4 space-x-3">
-      if len( vm.FormErrors) > 0 {
-      @modal.Trigger(modal.TriggerProps{
-      ModalID: "default-modal",
-      }) {
-      @button.Button(button.Props{
-      ID: "error-btn",
-      Class: "hidden",
-      }) {
-      }
-      }
-      }
-      @modal.Trigger(modal.TriggerProps{
-      ModalID: "default-modal",
-      }) {
-      @button.Button(button.Props{
-      Class: "bg-green-700 text-white hover:bg-green-800 text-lg",
-      }) {
-      Check Availability
-      }
-      }
-      @modal.Modal(modal.Props{
-      ID: "default-modal",
-      Class: "max-w-md",
-      DisableClickAway: true,
-      DisableESC: true,
-      }) {
-      @modal.Header() {
-      Check Availability
-      }
-      @modal.Body() {
-      <div class="w-full">
-        <form id="form-availability" class="flex flex-col space-y-4">
-          <input type="hidden" name="csrf_token" value={ vm.CSRFToken } />
-          @form.Item() {
-          @form.Label(form.LabelProps{
-          For: "startdate",
-          }) {
-          Start Date
-          }
-          @datepicker.DatePicker(datepicker.Props{
-          HasError: false,
-          ID: "startdate",
-          Name: "startdate",
-          Value: vm.StartDate,
-          })
-          if vm.FormErrors["startdate"] != "" {
-          @form.Message(form.MessageProps{
-          Variant: form.MessageVariantError,
-          }) {
-          Select a valid date
-          }
-          }
-          }
-          @form.Item() {
-          @form.Label(form.LabelProps{
-          For: "enddate",
-          }) {
-          End Date
-          }
-          @datepicker.DatePicker(datepicker.Props{
-          ID: "enddate",
-          Name: "enddate",
-          Value: vm.EndDate,
-          })
-          if vm.FormErrors["enddate"] != "" {
-          @form.Message(form.MessageProps{
-          Variant: form.MessageVariantError,
-          }) {
-          Select a valid date
-          }
-          }
-          }
-          @button.Button(button.Props{
-          Type: button.TypeSubmit,
-          }) {
-          Search Availability
-          }
-        </form>
-      </div>
-      if len(vm.FormErrors) > 0 {
-      <div class="pt-5">
-        @alert.Alert(alert.Props{Variant: alert.VariantDestructive}) {
-        @icon.TriangleAlert(icon.Props{Size: 16})
-        @alert.Title() {
-        Error
-        }
-        @alert.Description() {
-        Errors occurred while processing your request:
-        <ul class="list-disc">
-          for _,v := range vm.FormErrors {
-          <li>{ v }</li>
-          }
-        </ul>
-        }
-        }
-      </div>
-      } else {
-      @modal.Close()
-      }
-      }
-      @modal.Footer() {
-      <div class="flex gap-2">
-        @modal.Close(modal.CloseProps{
-        ModalID: "default-modal",
-        }) {
-        @button.Button() {
-        Cancel
-        }
-        }
-      </div>
-      }
-      }
-    </div>
-  </div>
-</div>
-}
+	@templates.MainLayout(headContent(), scriptSingleRoom()) {
+		<div class="flex flex-row justify-center items-center py-5">
+			<div class="w-3/4">
+				<div class="flex justify-center items-center my-4">
+					<img src="/static/img/single-room.png" alt="Single Room" class="w-3/4 h-auto rounded-lg shadow-lg"/>
+				</div>
+				<div>
+					<h1 class="text-3xl font-bold text-center mt-4">Single Room</h1>
+					<p class="text-justify mt-2">
+						Your home awaw from home. set on majestic waters of the Atlantic Ocean, this will be a vacation to remember.
+						Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima, ducimus. Accusamus placeat quisquam nesciunt
+						animi quos sapiente iusto nostrum dolorum reprehenderit sequi, error soluta porro numquam eligendi saepe earum
+						temporibus?. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+					</p>
+				</div>
+				<div class="flex justify-center mt-4 space-x-3">
+					if len( vm.FormErrors) > 0 {
+						@modal.Trigger(modal.TriggerProps{
+							ModalID: "default-modal",
+						}) {
+							@button.Button(button.Props{
+								ID:    "error-btn",
+								Class: "hidden",
+							}) {
+							}
+						}
+					}
+					@modal.Trigger(modal.TriggerProps{
+						ModalID: "default-modal",
+					}) {
+						@button.Button(button.Props{
+							Class: "bg-green-700 text-white hover:bg-green-800 text-lg",
+						}) {
+							Check Availability
+						}
+					}
+					@modal.Modal(modal.Props{
+						ID:               "default-modal",
+						Class:            "max-w-md",
+						DisableClickAway: true,
+						DisableESC:       true,
+					}) {
+						@modal.Header() {
+							Check Availability
+						}
+						@modal.Body() {
+							<div class="w-full">
+								<form id="form-availability" class="flex flex-col space-y-4">
+									<input type="hidden" name="csrf_token" value={ vm.CSRFToken }/>
+									@form.Item() {
+										@form.Label(form.LabelProps{
+											For: "startdate",
+										}) {
+											Start Date
+										}
+										@datepicker.DatePicker(datepicker.Props{
+											HasError: false,
+											ID:       "startdate",
+											Name:     "startdate",
+											Value:    vm.StartDate,
+										})
+										if len(vm.Form.Errors["startdate"]) > 0 {
+											@form.Message(form.MessageProps{
+												Variant: form.MessageVariantError,
+											}) {
+												Select a valid date
+											}
+										}
+									}
+									@form.Item() {
+										@form.Label(form.LabelProps{
+											For: "enddate",
+										}) {
+											End Date
+										}
+										@datepicker.DatePicker(datepicker.Props{
+											ID:    "enddate",
+											Name:  "enddate",
+											Value: vm.EndDate,
+										})
+										if len(vm.Form.Errors["enddate"]) > 0 {
+											@form.Message(form.MessageProps{
+												Variant: form.MessageVariantError,
+											}) {
+												Select a valid date
+											}
+										}
+									}
+									@button.Button(button.Props{
+										Type: button.TypeSubmit,
+									}) {
+										Search Availability
+									}
+								</form>
+							</div>
+							if len(vm.Form.Errors) > 0 {
+								<div class="pt-5">
+									@alert.Alert(alert.Props{Variant: alert.VariantDestructive}) {
+										@icon.TriangleAlert(icon.Props{Size: 16})
+										@alert.Title() {
+											Error
+										}
+										@alert.Description() {
+											Errors occurred while processing your request:
+											<ul class="list-disc">
+												for _,v := range vm.Form.Errors {
+													<li>{ v[0] }</li>
+												}
+											</ul>
+										}
+									}
+								</div>
+							} else {
+								@modal.Close()
+							}
+						}
+						@modal.Footer() {
+							<div class="flex gap-2">
+								@modal.Close(modal.CloseProps{
+									ModalID: "default-modal",
+								}) {
+									@button.Button() {
+										Cancel
+									}
+								}
+							</div>
+						}
+					}
+				</div>
+			</div>
+		</div>
+	}
 }

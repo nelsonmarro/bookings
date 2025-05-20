@@ -1,0 +1,71 @@
+package templates
+
+import (
+	"github.com/axzilla/templui/component/table"
+	"github.com/nelsonmarro/bookings/internal/models"
+)
+
+templ summaryHead() {
+	<title>ReservationSummary</title>
+}
+
+type ReservationSumaryPageVM struct {
+	Reservation models.Reservation
+	models.BaseViewModel
+}
+
+func NewReservationSummaryPageVM() *ReservationSumaryPageVM {
+	vm := &ReservationSumaryPageVM{
+		BaseViewModel: models.BaseViewModel{
+			Form:      new(models.Form),
+			CSRFToken: "",
+		},
+	}
+	return vm
+}
+
+templ ReservationSumary(vm *ReservationSumaryPageVM) {
+	@MainLayout(summaryHead()) {
+		<div class="flex flex-row justify-center items-center py-5">
+			<div class="w-3/4">
+				<h1 class="text-3xl font-bold text-center mt-4">Reservation Summary</h1>
+				@table.Table(table.Props{
+					Class: "w-full my-5",
+				}) {
+					@table.Header() {
+						@table.Row() {
+							@table.Head() {
+								First Name
+							}
+							@table.Head() {
+								Last Name
+							}
+							@table.Head() {
+								Email
+							}
+							@table.Head() {
+								Phone Number
+							}
+						}
+					}
+					@table.Body() {
+						@table.Row() {
+							@table.Cell() {
+								{ vm.Reservation.FirstName }
+							}
+							@table.Cell() {
+								{ vm.Reservation.LastName }
+							}
+							@table.Cell() {
+								{ vm.Reservation.Email }
+							}
+							@table.Cell() {
+								{ vm.Reservation.PhoneNumber }
+							}
+						}
+					}
+				}
+			</div>
+		</div>
+	}
+}

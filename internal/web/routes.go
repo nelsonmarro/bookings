@@ -41,6 +41,10 @@ func Routes(app *config.AppConfig) http.Handler {
 
 	confirmReservationHandler := handlers.NewConfirmReservationHandler(app)
 	mux.Get("/reservation/confirmation", confirmReservationHandler.Get)
+	mux.Post("/reservation/confirmation", confirmReservationHandler.Post)
+
+	reservationSummaryHandler := handlers.NewReservationSummaryHandler(app)
+	mux.Get("/reservation/summary", reservationSummaryHandler.Get)
 
 	mux.Handle("GET /rooms/double", rooms.NewDoubleRoomHandler(app))
 
