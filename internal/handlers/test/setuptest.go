@@ -1,12 +1,11 @@
-package web
+package test
 
 import (
 	"encoding/gob"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/nelsonmarro/bookings/config"
 	"github.com/nelsonmarro/bookings/internal/handlers"
 	"github.com/nelsonmarro/bookings/internal/handlers/rooms"
@@ -14,15 +13,16 @@ import (
 	"github.com/nelsonmarro/bookings/internal/models"
 )
 
-func Routes(app *config.AppConfig) http.Handler {
+func getRoutes() http.Handler {
+	app := config.GetConfigInstance()
 	gob.Register(models.Reservation{})
 
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
-	mux.Use(func(next http.Handler) http.Handler {
-		return middlewares.CSRFMiddleware(next, app)
-	})
+	// mux.Use(func(next http.Handler) http.Handler {
+	// 	return middlewares.CSRFMiddleware(next, app)
+	// })
 	mux.Use(func(next http.Handler) http.Handler {
 		return middlewares.SessionLoad(next, app)
 	})

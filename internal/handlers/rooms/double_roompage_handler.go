@@ -17,7 +17,7 @@ func NewDoubleRoomHandler(app *config.AppConfig) *DoubleRoomHandler {
 	}
 }
 
-func (h *DoubleRoomHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DoubleRoomHandler) Get(w http.ResponseWriter, r *http.Request) {
 	doubleRoom := rooms.DoubleRoomPage()
 	err := doubleRoom.Render(r.Context(), w)
 	if err != nil {

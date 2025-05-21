@@ -123,7 +123,7 @@ func ReservationPage(vm *ReservationPageVM) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex flex-row justify-center items-center py-5\"><div class=\"w-3/4 h-[690px]\"><div><h1 class=\"text-3xl font-bold text-center mt-4\">Search for Availability</h1><div class=\"w-full\"><form method=\"post\" action=\"/reservation\" class=\"flex flex-col space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex flex-row justify-center items-center py-5\"><div class=\"w-3/4 h-[690px]\"><div><h1 class=\"text-3xl font-bold text-center mt-4\">Search for Availability</h1><div class=\"w-full\"><form method=\"post\" data-testid=\"reservationFormTest\" action=\"/reservation\" class=\"flex flex-col space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -1,46 +1,46 @@
 package templates
 
 import (
-	"github.com/axzilla/templui/component/button"
-	"github.com/nelsonmarro/bookings/internal/models"
-	"github.com/nelsonmarro/bookings/templates/components"
+"github.com/axzilla/templui/component/button"
+"github.com/nelsonmarro/bookings/internal/models"
+"github.com/nelsonmarro/bookings/templates/components"
 )
 
 templ homeHead() {
-	<title>Home Page</title>
+<title>Home Page</title>
 }
 
 type HomePageVM struct {
-	models.BaseViewModel
+models.BaseViewModel
 }
 
 func NewHomePageVM() *HomePageVM {
-	return &HomePageVM{
-		BaseViewModel: models.BaseViewModel{},
-	}
+return &HomePageVM{
+BaseViewModel: models.BaseViewModel{},
+}
 }
 
 templ HomePage(vm *HomePageVM) {
-	@MainLayout(homeHead()) {
-		@components.Toast(vm.MessageType, vm.Message)
-		<div class="flex flex-row justify-center items-center py-5">
-			<div class="w-3/4">
-				@components.CarouselWithImages()
-				<div>
-					<h1 class="text-3xl font-bold text-center mt-4">Welcome to Our Booking Site</h1>
-					<p class="text-lg text-center mt-2">
-						Your home awaw from home. set on majestic waters of the Atlantic Ocean, this will be a vacation to remember.
-					</p>
-				</div>
-				<div class="flex justify-center mt-4 space-x-3">
-					@button.Button(button.Props{
-						Href:  "/make-reservation",
-						Class: "bg-green-700 text-white hover:bg-green-800 text-lg",
-					}) {
-						Make Reservation Now
-					}
-				</div>
-			</div>
-		</div>
-	}
+@MainLayout(homeHead()) {
+@components.Toast(vm.MessageType, vm.Message)
+<div class="flex flex-row justify-center items-center py-5">
+  <div data-testid="homeTempl" class="w-3/4">
+    @components.CarouselWithImages()
+    <div>
+      <h1 class="text-3xl font-bold text-center mt-4">Welcome to Our Booking Site</h1>
+      <p class="text-lg text-center mt-2">
+        Your home awaw from home. set on majestic waters of the Atlantic Ocean, this will be a vacation to remember.
+      </p>
+    </div>
+    <div class="flex justify-center mt-4 space-x-3">
+      @button.Button(button.Props{
+      Href: "/make-reservation",
+      Class: "bg-green-700 text-white hover:bg-green-800 text-lg",
+      }) {
+      Make Reservation Now
+      }
+    </div>
+  </div>
+</div>
+}
 }

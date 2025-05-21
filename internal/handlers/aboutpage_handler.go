@@ -18,7 +18,7 @@ func NewAboutpageHandler(app *config.AppConfig) *AboutpageHandler {
 	}
 }
 
-func (h *AboutpageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *AboutpageHandler) Get(w http.ResponseWriter, r *http.Request) {
 	remoteIP := h.app.Session.GetString(r.Context(), "remote_ip")
 	fmt.Println("Remote IP:", remoteIP)
 

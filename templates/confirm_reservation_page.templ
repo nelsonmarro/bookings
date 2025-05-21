@@ -32,7 +32,12 @@ templ ConfirmReservationPage(vm *ConfirmReservationPageVM) {
 				<div>
 					<h1 class="text-3xl font-bold text-center mt-4">Confirm Reservation</h1>
 					<div class="w-full">
-						<form method="post" action="/reservation/confirmation" class="flex flex-col space-y-4">
+						<form
+							method="post"
+							data-testid="confirm-reservation-form"
+							action="/reservation/confirmation"
+							class="flex flex-col space-y-4"
+						>
 							<input type="hidden" name="csrf_token" value={ vm.CSRFToken }/>
 							@form.Item() {
 								@form.Label(form.LabelProps{

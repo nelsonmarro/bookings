@@ -3,41 +3,44 @@ package templates
 import "github.com/nelsonmarro/bookings/templates/components"
 
 templ headSection(contents templ.Component) {
-	<head>
-		<meta charset="UTF-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<link rel="stylesheet" href="https://rsms.me/inter/inter.css"/>
-		<link rel="stylesheet" href="/static/css/styles.css"/>
-		@contents
-	</head>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  @contents
+</head>
 }
 
 templ scriptsSection(scripts ...templ.Component) {
-	<script type="module" src="/static/js/app.js" defer></script>
-	for _, scriptComponent := range scripts {
-		@scriptComponent
-	}
+<script type="module" src="/static/js/app.js" defer></script>
+for _, scriptComponent := range scripts {
+@scriptComponent
+}
 }
 
 templ MainLayout(headContent templ.Component, scripts ...templ.Component) {
-	<!DOCTYPE html>
-	<html lang="en">
-		@headSection(headContent)
-		<body class="dark">
-			<header>
-				@components.Header()
-			</header>
-			<div>
-				{ children... }
-			</div>
-			<footer class="py-5 bg-gray-800 text-white">
-				<div class="grid grid-cols-3">
-					<div class="text-center">Left</div>
-					<div class="text-center">Middle</div>
-					<div class="text-center">Right</div>
-				</div>
-			</footer>
-			@scriptsSection(scripts...)
-		</body>
-	</html>
+<!DOCTYPE html>
+<html lang="en">
+@headSection(headContent)
+
+<body class="dark">
+  <header data-testid="headerTempl">
+    @components.Header()
+  </header>
+  <div>
+    { children... }
+  </div>
+  <footer data-testid="footerTempl" class="py-5 bg-gray-800 text-white">
+    <div class="grid grid-cols-3">
+      <div class="text-center">Left</div>
+      <div class="text-center">Middle</div>
+      <div class="text-center">Right</div>
+    </div>
+  </footer>
+  @scriptsSection(scripts...)
+</body>
+
+</html>
 }

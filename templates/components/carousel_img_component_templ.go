@@ -219,7 +219,7 @@ func ImageSlide(src string, alt string) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(src)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/carousel_img_component.templ`, Line: 38, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/carousel_img_component.templ`, Line: 38, Col: 14}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -232,7 +232,7 @@ func ImageSlide(src string, alt string) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(alt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/carousel_img_component.templ`, Line: 38, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/carousel_img_component.templ`, Line: 38, Col: 26}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {

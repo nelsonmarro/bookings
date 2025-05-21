@@ -17,7 +17,7 @@ func NewContactpageHandler(app *config.AppConfig) *ContactpageHandler {
 	}
 }
 
-func (h *ContactpageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *ContactpageHandler) Get(w http.ResponseWriter, r *http.Request) {
 	contact := templates.ContactPage()
 	err := contact.Render(r.Context(), w)
 	if err != nil {

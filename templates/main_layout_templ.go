@@ -111,7 +111,7 @@ func MainLayout(headContent templ.Component, scripts ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<body class=\"dark\"><header>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<body class=\"dark\"><header data-testid=\"headerTempl\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -127,7 +127,7 @@ func MainLayout(headContent templ.Component, scripts ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><footer class=\"py-5 bg-gray-800 text-white\"><div class=\"grid grid-cols-3\"><div class=\"text-center\">Left</div><div class=\"text-center\">Middle</div><div class=\"text-center\">Right</div></div></footer>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><footer data-testid=\"footerTempl\" class=\"py-5 bg-gray-800 text-white\"><div class=\"grid grid-cols-3\"><div class=\"text-center\">Left</div><div class=\"text-center\">Middle</div><div class=\"text-center\">Right</div></div></footer>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

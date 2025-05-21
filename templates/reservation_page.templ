@@ -39,7 +39,7 @@ templ ReservationPage(vm *ReservationPageVM) {
 				<div>
 					<h1 class="text-3xl font-bold text-center mt-4">Search for Availability</h1>
 					<div class="w-full">
-						<form method="post" action="/reservation" class="flex flex-col space-y-4">
+						<form method="post" data-testid="reservationFormTest" action="/reservation" class="flex flex-col space-y-4">
 							<input type="hidden" name="csrf_token" value={ vm.CSRFToken }/>
 							@form.Item() {
 								@form.Label(form.LabelProps{

@@ -27,7 +27,7 @@ func NewReservationSummaryPageVM() *ReservationSumaryPageVM {
 templ ReservationSumary(vm *ReservationSumaryPageVM) {
 	@MainLayout(summaryHead()) {
 		<div class="flex flex-row justify-center items-center py-5">
-			<div class="w-3/4">
+			<div class="w-3/4" data-testid="reservation-summaryTempl">
 				<h1 class="text-3xl font-bold text-center mt-4">Reservation Summary</h1>
 				@table.Table(table.Props{
 					Class: "w-full my-5",

@@ -18,7 +18,7 @@ func NewHomepageHandler(app *config.AppConfig) *HomepageHandler {
 	}
 }
 
-func (h *HomepageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *HomepageHandler) Get(w http.ResponseWriter, r *http.Request) {
 	vm := templates.NewHomePageVM()
 
 	messageType, message := models.GetSessionMessage(h.app, r)

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"github.com/justinas/nosurf"
 
 	"github.com/nelsonmarro/bookings/config"
+	"github.com/nelsonmarro/bookings/internal/helpers"
 	"github.com/nelsonmarro/bookings/internal/models"
 	"github.com/nelsonmarro/bookings/templates"
 )
@@ -32,7 +32,7 @@ func (h *ReservationpageHandler) Get(w http.ResponseWriter, r *http.Request) {
 	reservation := templates.ReservationPage(vm)
 	err := reservation.Render(r.Context(), w)
 	if err != nil {
-		http.Error(w, "Error rendering template", http.StatusInternalServerError)
+		helpers.ServerError(w, err)
 		return
 	}
 }
@@ -40,7 +40,7 @@ func (h *ReservationpageHandler) Get(w http.ResponseWriter, r *http.Request) {
 func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+		helpers.ServerError(w, err)
 		return
 	}
 
@@ -88,7 +88,6 @@ func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// TODO:Fix validation logic
 	if len(vm.Form.Errors) > 0 {
 		// Render the form with errors
 		w.WriteHeader(http.StatusBadRequest)
@@ -96,7 +95,7 @@ func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 		reservation := templates.ReservationPage(vm)
 		err := reservation.Render(r.Context(), w)
 		if err != nil {
-			http.Error(w, "Error rendering template", http.StatusInternalServerError)
+			helpers.ServerError(w, err)
 			return
 		}
 		return
@@ -114,13 +113,15 @@ func (h *ReservationpageHandler) PostJson(w http.ResponseWriter, r *http.Request
 
 	out, err := json.MarshalIndent(resp, "", "    ")
 	if err != nil {
-		log.Println("Error marshalling JSON:", err)
+		helpers.ServerError(w, err)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(out)
 	if err != nil {
-		log.Println("Error writing response:", err)
+		helpers.ServerError(w, err)
+		return
 	}
 }

@@ -90,7 +90,7 @@ func ReservationSumary(vm *ReservationSumaryPageVM) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex flex-row justify-center items-center py-5\"><div class=\"w-3/4\"><h1 class=\"text-3xl font-bold text-center mt-4\">Reservation Summary</h1>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex flex-row justify-center items-center py-5\"><div class=\"w-3/4\" data-testid=\"reservation-summaryTempl\"><h1 class=\"text-3xl font-bold text-center mt-4\">Reservation Summary</h1>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
