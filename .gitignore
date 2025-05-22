@@ -24,3 +24,4 @@ go.work.sum
 tmp/
 
 database.yml
+.idea/
