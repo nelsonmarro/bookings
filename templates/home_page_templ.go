@@ -121,7 +121,7 @@ func HomePage(vm *HomePageVM) templ.Component {
 				return nil
 			})
 			templ_7745c5c3_Err = button.Button(button.Props{
-				Href:  "/make-reservation",
+				Href:  "/reservation",
 				Class: "bg-green-700 text-white hover:bg-green-800 text-lg",
 			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {

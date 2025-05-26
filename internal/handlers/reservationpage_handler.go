@@ -11,6 +11,7 @@ import (
 	"github.com/nelsonmarro/bookings/config"
 	"github.com/nelsonmarro/bookings/internal/helpers"
 	"github.com/nelsonmarro/bookings/internal/models"
+	"github.com/nelsonmarro/bookings/internal/repository"
 	"github.com/nelsonmarro/bookings/templates"
 )
 
@@ -18,11 +19,13 @@ const htmlDateLayout = "2006-01-02"
 
 type ReservationpageHandler struct {
 	app *config.AppConfig
+	DB  repository.DataBaseRepo
 }
 
-func NewReservationpageHandler(app *config.AppConfig) *ReservationpageHandler {
+func NewReservationpageHandler(app *config.AppConfig, dbrepo repository.DataBaseRepo) *ReservationpageHandler {
 	return &ReservationpageHandler{
 		app: app,
+		DB:  dbrepo,
 	}
 }
 

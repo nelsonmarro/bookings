@@ -6,22 +6,30 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+
 	"github.com/nelsonmarro/bookings/config"
 	"github.com/nelsonmarro/bookings/internal/handlers/rooms"
 	"github.com/nelsonmarro/bookings/internal/middlewares"
 	"github.com/nelsonmarro/bookings/internal/models"
+	"github.com/nelsonmarro/bookings/internal/repository/dbrepo"
 )
 
 func getRoutes() http.Handler {
 	app := config.GetConfigInstance()
+
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
+
+	dbrepo := dbrepo.NewPostgresRepo(db.SQL, app)
 
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
-	// mux.Use(func(next http.Handler) http.Handler {
-	// 	return middlewares.CSRFMiddleware(next, app)
-	// })
+	mux.Use(func(next http.Handler) http.Handler {
+		return middlewares.CSRFMiddleware(next, app)
+	})
 	mux.Use(func(next http.Handler) http.Handler {
 		return middlewares.SessionLoad(next, app)
 	})
@@ -37,7 +45,7 @@ func getRoutes() http.Handler {
 	contactpageHandler := NewContactpageHandler(app)
 	mux.Get("/contact", contactpageHandler.Get)
 
-	reservationPageHandler := NewReservationpageHandler(app)
+	reservationPageHandler := NewReservationpageHandler(app, dbrepo)
 	mux.Get("/reservation", reservationPageHandler.Get)
 	mux.Post("/reservation", reservationPageHandler.Post)
 	mux.Post("/reservation-json", reservationPageHandler.PostJson)

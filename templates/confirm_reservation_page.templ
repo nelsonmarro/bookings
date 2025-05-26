@@ -2,6 +2,7 @@ package templates
 
 import (
 	"github.com/axzilla/templui/component/button"
+	"github.com/axzilla/templui/component/datepicker"
 	"github.com/axzilla/templui/component/form"
 	"github.com/axzilla/templui/component/input"
 	"github.com/nelsonmarro/bookings/internal/models"
@@ -39,6 +40,7 @@ templ ConfirmReservationPage(vm *ConfirmReservationPageVM) {
 							class="flex flex-col space-y-4"
 						>
 							<input type="hidden" name="csrf_token" value={ vm.CSRFToken }/>
+							<input type="hidden" name="room_id" value="1"/>
 							@form.Item() {
 								@form.Label(form.LabelProps{
 									For: "first_name",
@@ -122,6 +124,45 @@ templ ConfirmReservationPage(vm *ConfirmReservationPageVM) {
 									Value:       vm.Reservation.PhoneNumber,
 								},
 								)
+							}
+							@form.Item() {
+								@form.Label(form.LabelProps{
+									For: "start_date",
+								}) {
+									Start Date
+								}
+								@datepicker.DatePicker(datepicker.Props{
+									HasError: false,
+									ID:       "start_date",
+									Name:     "start_date",
+									Value:    vm.Reservation.StartDate,
+								})
+								if len(vm.Form.Errors["start_date"]) > 0 {
+									@form.Message(form.MessageProps{
+										Variant: form.MessageVariantError,
+									}) {
+										Select a valid date
+									}
+								}
+							}
+							@form.Item() {
+								@form.Label(form.LabelProps{
+									For: "end_date",
+								}) {
+									End Date
+								}
+								@datepicker.DatePicker(datepicker.Props{
+									ID:    "end_date",
+									Name:  "end_date",
+									Value: vm.Reservation.EndDate,
+								})
+								if len(vm.Form.Errors["enddate"]) > 0 {
+									@form.Message(form.MessageProps{
+										Variant: form.MessageVariantError,
+									}) {
+										Select a valid date
+									}
+								}
 							}
 							@button.Button(button.Props{
 								Type: button.TypeSubmit,
