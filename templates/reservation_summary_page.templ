@@ -11,6 +11,8 @@ templ summaryHead() {
 
 type ReservationSumaryPageVM struct {
 	Reservation models.Reservation
+	StartDate   string
+	EndDate     string
 	models.BaseViewModel
 }
 
@@ -46,6 +48,12 @@ templ ReservationSumary(vm *ReservationSumaryPageVM) {
 							@table.Head() {
 								Phone Number
 							}
+							@table.Head() {
+								Start Date
+							}
+							@table.Head() {
+								End Date
+							}
 						}
 					}
 					@table.Body() {
@@ -61,6 +69,12 @@ templ ReservationSumary(vm *ReservationSumaryPageVM) {
 							}
 							@table.Cell() {
 								{ vm.Reservation.PhoneNumber }
+							}
+							@table.Cell() {
+								{ vm.StartDate }
+							}
+							@table.Cell() {
+								{ vm.EndDate }
 							}
 						}
 					}

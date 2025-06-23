@@ -1,34 +1,34 @@
 package components
 
 import (
-"github.com/axzilla/templui/component/toast"
-"github.com/nelsonmarro/bookings/internal/models"
-"strings"
+	"github.com/axzilla/templui/component/toast"
+	"github.com/nelsonmarro/bookings/internal/models"
+	"strings"
 )
 
 func getToastVariant(msgType models.MessageType) toast.Variant {
-switch msgType {
-case models.MessageTypeError:
-return toast.VariantError
-case models.MessageTypeInfo:
-return toast.VariantInfo
-case models.MessageTypeWarning:
-return toast.VariantWarning
-default:
-return ""
-}
+	switch msgType {
+	case models.MessageTypeError:
+		return toast.VariantError
+	case models.MessageTypeInfo:
+		return toast.VariantInfo
+	case models.MessageTypeWarning:
+		return toast.VariantWarning
+	default:
+		return ""
+	}
 }
 
 templ Toast(msgType models.MessageType, msg string) {
-if msgType != "" {
-@toast.Toast(toast.Props{
-Title: strings.ToUpper(string(msgType)),
-Variant: getToastVariant(msgType),
-Description: msg,
-Position: toast.PositionBottomCenter,
-Icon: true,
-ShowIndicator: true,
-Duration: 3500,
-})
-}
+	if msg != "" {
+		@toast.Toast(toast.Props{
+			Title:         strings.ToUpper(string(msgType)),
+			Variant:       getToastVariant(msgType),
+			Description:   msg,
+			Position:      toast.PositionBottomCenter,
+			Icon:          true,
+			ShowIndicator: true,
+			Duration:      3500,
+		})
+	}
 }

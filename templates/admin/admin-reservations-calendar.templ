@@ -1,0 +1,180 @@
+package admin
+
+import "github.com/nelsonmarro/bookings/internal/models"
+import "github.com/axzilla/templui/component/button"
+import "fmt"
+import "time"
+import "github.com/axzilla/templui/component/table"
+import "github.com/axzilla/templui/component/checkbox"
+
+type AdminCalendarVM struct {
+	nextMonth       string
+	nextMonthYear   string
+	lastMonth       string
+	lastMonthYear   string
+	thisMonth       string
+	thisMonthYear   string
+	now             time.Time
+	daysInMonth     int
+	rooms           []models.Room
+	ReservationMaps map[string]map[string]int
+	BlockMaps       map[string]map[string]int
+	models.BaseViewModel
+}
+
+func NewAdminCalendarVM(
+	nextMonth,
+	nextMonthYear,
+	lastMonth,
+	lastMonthYear,
+	thisMonth,
+	thisMonthYear string,
+	now time.Time,
+	daysInMonth int,
+	rooms []models.Room,
+) *AdminCalendarVM {
+	return &AdminCalendarVM{
+		nextMonth:       nextMonth,
+		nextMonthYear:   nextMonthYear,
+		lastMonth:       lastMonth,
+		lastMonthYear:   lastMonthYear,
+		thisMonth:       thisMonth,
+		thisMonthYear:   thisMonthYear,
+		now:             now,
+		daysInMonth:     daysInMonth,
+		rooms:           rooms,
+		ReservationMaps: make(map[string]map[string]int, len(rooms)),
+		BlockMaps:       make(map[string]map[string]int, len(rooms)),
+		BaseViewModel: models.BaseViewModel{
+			Form:      new(models.Form),
+			CSRFToken: "",
+		},
+	}
+}
+
+templ headerCalendar() {
+	<title>Reservations Calendar</title>
+}
+
+templ AdminCalendarPage(vm *AdminCalendarVM) {
+	@AdminLayout(headerCalendar(), "calendar", vm.MessageType, vm.Message) {
+		<div x-data="{ pageName: `Calendar`}">
+			<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+				<h2 class="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName"></h2>
+				<nav>
+					<ol class="flex items-center gap-1.5">
+						<li>
+							<a class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400" href="index.html">
+								Home
+								<svg
+									class="stroke-current"
+									width="17"
+									height="16"
+									viewBox="0 0 17 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
+										stroke=""
+										stroke-width="1.2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									></path>
+								</svg>
+							</a>
+						</li>
+						<li class="text-sm text-gray-800 dark:text-white/90" x-text="pageName"></li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+		<!-- Breadcrumb End -->
+		<div
+			class="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12"
+		>
+			<div class="mx-auto w-full">
+				<h3 class="text-2xl text-center">{ vm.now.Format("January") } { vm.now.Format("2006") }</h3>
+				<div class="flex justify-between">
+					@button.Button(button.Props{
+						Href: fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", vm.lastMonthYear, vm.lastMonth),
+					}) {
+						{ fmt.Sprintf("<<") }
+					}
+					@button.Button(button.Props{
+						Href: fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", vm.nextMonthYear, vm.nextMonth),
+					}) {
+						{ fmt.Sprintf(">>") }
+					}
+				</div>
+				<form method="post" action="/admin/reservations-calendar">
+					<input type="hidden" name="csrf_token" value={ vm.CSRFToken }/>
+					<input type="hidden" name="y" value={ vm.thisMonthYear }/>
+					<input type="hidden" name="m" value={ vm.thisMonth }/>
+					for _, room := range vm.rooms {
+						{{ blocks := vm.BlockMaps[fmt.Sprintf("block_map_%d", room.ID)] }}
+						{{ reservations := vm.ReservationMaps[fmt.Sprintf("reservation_map_%d", room.ID)] }}
+						<h4 class="text-xl mt-4">
+							{ room.RoomName }
+						</h4>
+						@table.Table(table.Props{
+							Class: "mt-2",
+						}) {
+							@table.Body() {
+								@table.Row(table.RowProps{
+									Class: "bg-gray-500 text-white hover:bg-gray-600",
+								}) {
+									for i := 1; i <= vm.daysInMonth; i++ {
+										@table.Cell(table.CellProps{
+											Class: "text-center border",
+										}) {
+											{ i }
+										}
+									}
+								}
+								@table.Row() {
+									for i := 1; i <= vm.daysInMonth; i++ {
+										@table.Cell(table.CellProps{
+											Class: "text-center border",
+										}) {
+											if reservations[fmt.Sprintf("%s-%s-%02d", vm.thisMonthYear, vm.thisMonth, i)] > 0 {
+												// there is a reservation for this day
+												<a class="text-red-600 hover:text-red-700" href={ fmt.Sprintf("/admin/reservations/calendar/%d?y=%s&m=%s", reservations[fmt.Sprintf("%s-%s-%02d", vm.thisMonthYear, vm.thisMonth, i)], vm.thisMonthYear, vm.thisMonth) }>
+													R
+												</a>
+											} else {
+												// there is a block for this day
+												{{ attrs := templ.Attributes{} }}
+												if blocks[fmt.Sprintf("%s-%s-%02d", vm.thisMonthYear, vm.thisMonth, i)] > 0 {
+													{{
+	attrs["checked"] = "true"
+	attrs["name"] = fmt.Sprintf("remove_block_%d_%s-%s-%02d", room.ID, vm.thisMonthYear, vm.thisMonth, i)
+	attrs["value"] = fmt.Sprintf("%d", blocks[fmt.Sprintf("%s-%s-%02d", vm.thisMonthYear, vm.thisMonth, i)])
+													}}
+												} else {
+													{{
+	attrs["name"] = fmt.Sprintf("add_block_%d_%s-%s-%02d", room.ID, vm.thisMonthYear, vm.thisMonth, i)
+	attrs["value"] = fmt.Sprintf("%d", 1)
+													}}
+												}
+												@checkbox.Checkbox(checkbox.Props{
+													Attributes: attrs,
+												})
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					<br/>
+					@button.Button(button.Props{
+						Type: button.TypeSubmit,
+					}) {
+						Save Changes
+					}
+				</form>
+			</div>
+		</div>
+	}
+}

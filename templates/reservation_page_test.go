@@ -30,10 +30,10 @@ func TestReservationPage(t *testing.T) {
 		t.Error("expected text input to be present")
 	}
 
-	if formElem.Find("#startdate").Length() == 0 {
+	if formElem.Find("#start_date").Length() == 0 {
 		t.Error("expected start date input to be present")
 	}
-	if formElem.Find("#enddate").Length() == 0 {
+	if formElem.Find("#end_date").Length() == 0 {
 		t.Error("expected end date input to be present")
 	}
 

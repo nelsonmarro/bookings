@@ -1,0 +1,9 @@
+package deps
+
+var surrealHandle = templ.NewOnceHandle()
+
+templ SurrealJs() {
+	@surrealHandle.Once() {
+		<script src="https://cdn.jsdelivr.net/gh/gnat/surreal@main/surreal.js"></script>
+	}
+}

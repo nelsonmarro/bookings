@@ -1,0 +1,16 @@
+package deps 
+
+var scriptHandle = templ.NewOnceHandle()
+var cssHandle = templ.NewOnceHandle()
+
+templ GridJs() {
+	@scriptHandle.Once() {
+		<script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+	}
+}
+
+templ GridJsCss() {
+	@cssHandle.Once() {
+		<link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet"/>
+	}
+}

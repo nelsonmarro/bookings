@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -31,6 +32,9 @@ func NewReservationpageHandler(app *config.AppConfig, dbrepo repository.DataBase
 
 func (h *ReservationpageHandler) Get(w http.ResponseWriter, r *http.Request) {
 	vm := templates.NewReservationPageVM(nosurf.Token(r))
+	messageType, message := models.GetSessionMessage(r.Context())
+	vm.MessageType = messageType
+	vm.Message = message
 
 	reservation := templates.ReservationPage(vm)
 	err := reservation.Render(r.Context(), w)
@@ -49,45 +53,34 @@ func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 
 	vm := templates.NewReservationPageVM("")
 
-	startDateStr := r.FormValue("startdate")
-	endDateStr := r.FormValue("enddate")
+	startDateStr := r.FormValue("start_date")
+	endDateStr := r.FormValue("end_date")
 
 	var parsedStartDate, parsedEndDate time.Time
-	isValidStartDate := false
-	isValidEndDate := false
 
 	// Process Start Date
 	if strings.TrimSpace(startDateStr) == "" {
-		vm.Form.Errors.Add("startdate", "Start date is required")
+		vm.Form.Errors.Add("start_date", "Start date is required")
 	} else {
 		t, parseErr := time.Parse(htmlDateLayout, startDateStr)
 		if parseErr != nil {
-			vm.Form.Errors.Add("startdate", "Invalid start date format. Please select a valid date.")
+			vm.Form.Errors.Add("start_date", "Invalid start date format. Please select a valid date.")
 		} else {
 			vm.StartDate = t
 			parsedStartDate = t
-			isValidStartDate = true
 		}
 	}
 
 	// --- Process End Date ---
 	if strings.TrimSpace(endDateStr) == "" {
-		vm.Form.Errors.Add("enddate", "End date is required.")
+		vm.Form.Errors.Add("end_date", "End date is required.")
 	} else {
 		t, parseErr := time.Parse(htmlDateLayout, endDateStr)
 		if parseErr != nil {
-			vm.Form.Errors.Add("enddate", "Invalid end date format. Please select a valid date.")
+			vm.Form.Errors.Add("end_date", "Invalid end date format. Please select a valid date.")
 		} else {
 			vm.EndDate = t // Set for re-populating the form
 			parsedEndDate = t
-			isValidEndDate = true
-		}
-	}
-
-	// --- Cross-Field Validation ---
-	if isValidStartDate && isValidEndDate {
-		if parsedStartDate.After(parsedEndDate) {
-			vm.Form.Errors.Add("enddate", "End date must be after start date.")
 		}
 	}
 
@@ -103,15 +96,75 @@ func (h *ReservationpageHandler) Post(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	// --- All Validations Passed ---
-	h.app.Session.Put(r.Context(), "flash_success", "Your availability check was successful!") // Example flash message
-	http.Redirect(w, r, "/reservation/confirmation", http.StatusSeeOther)                      // Redirect back or to a summary page
+
+	rooms, err := h.DB.SearchAvailabilityForAllRooms(parsedStartDate, parsedEndDate)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	for _, room := range rooms {
+		h.app.InfoLog.Printf("Available room: %s (ID: %d)", room.RoomName, room.ID)
+	}
+
+	if len(rooms) == 0 {
+		// no available rooms
+		h.app.Session.Put(r.Context(), "error", "No rooms available for the selected dates.")
+		http.Redirect(w, r, "/reservation", http.StatusSeeOther)
+		return
+	}
+
+	res := models.Reservation{
+		StartDate: vm.StartDate,
+		EndDate:   vm.EndDate,
+	}
+	h.app.Session.Put(r.Context(), "reservation", res)
+
+	chooseRoomVm := templates.NewChooseRoomPageVM(rooms)
+	chooseRoomPage := templates.ChooseRoomPage(chooseRoomVm)
+	err = chooseRoomPage.Render(r.Context(), w)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
 }
 
 func (h *ReservationpageHandler) PostJson(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	sdate := r.FormValue("start_date")
+	endate := r.FormValue("end_date")
+
+	layout := "2006-01-02"
+	startDate, err := time.Parse(layout, sdate)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	endDate, err := time.Parse(layout, endate)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	roomID, _ := strconv.Atoi(r.FormValue("room_id"))
+
+	available, err := h.DB.SearchAvailabilityByDatesByRoomID(startDate, endDate, roomID)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
 	resp := models.JsonResponse{
-		Ok:      true,
-		Message: "Reservation request received",
+		Ok:        available,
+		Message:   "",
+		StartDate: sdate,
+		EndDate:   endate,
+		RoomID:    strconv.Itoa(roomID),
 	}
 
 	out, err := json.MarshalIndent(resp, "", "    ")

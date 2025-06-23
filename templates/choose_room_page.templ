@@ -1,0 +1,41 @@
+package templates
+
+import "github.com/nelsonmarro/bookings/internal/models"
+import "fmt"
+
+templ chooseRoomHead() {
+	<title>Choose Room</title>
+}
+
+type ChooseRoomPageVM struct {
+	Rooms []models.Room
+	models.BaseViewModel
+}
+
+func NewChooseRoomPageVM(rooms []models.Room) *ChooseRoomPageVM {
+	return &ChooseRoomPageVM{
+		BaseViewModel: models.BaseViewModel{
+			CSRFToken: "",
+		},
+		Rooms: rooms,
+	}
+}
+
+templ ChooseRoomPage(vm *ChooseRoomPageVM) {
+	@MainLayout(aboutHead()) {
+		<div class="flex flex-row justify-center py-5">
+			<div class="w-3/4">
+				<h1 class="text-4xl text-center">Choose a Room</h1>
+				<ul>
+					for _, room := range vm.Rooms {
+						<li>
+							<a href={ templ.URL("/choose-room/" + fmt.Sprintf("%d", room.ID)) }>
+								{ room.RoomName }
+							</a>
+						</li>
+					}
+				</ul>
+			</div>
+		</div>
+	}
+}

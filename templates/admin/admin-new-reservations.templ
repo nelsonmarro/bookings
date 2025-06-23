@@ -1,0 +1,79 @@
+package admin
+
+import "github.com/nelsonmarro/bookings/internal/models"
+import "github.com/nelsonmarro/bookings/templates/deps"
+
+type AdminNewReservationsVM struct {
+	reservations []models.Reservation
+	models.BaseViewModel
+}
+
+func NewAdminNewReservationsVM(reservations []models.Reservation) *AdminNewReservationsVM {
+	return &AdminNewReservationsVM{
+		BaseViewModel: models.BaseViewModel{
+			Form:      new(models.Form),
+			CSRFToken: "",
+		},
+		reservations: reservations,
+	}
+}
+
+templ headerNewReservations() {
+	@deps.GridJsCss()
+	<title>New Reservations</title>
+}
+
+templ scriptsNewReservations() {
+	@deps.GridJs()
+	@scriptHandle.Once() {
+		<script src="/static/js/admin/admin-reservations.js"></script>
+	}
+}
+
+templ AdminNewReservationsPage(vm *AdminNewReservationsVM) {
+	@AdminLayout(headerNewReservations(), "newReservations", vm.MessageType, vm.Message, scriptsNewReservations()) {
+		<div x-data="{ pageName: `New Reservations`}">
+			<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+				<h2 class="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName"></h2>
+				<nav>
+					<ol class="flex items-center gap-1.5">
+						<li>
+							<a class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400" href="/admin/dashboard">
+								Home
+								<svg
+									class="stroke-current"
+									width="17"
+									height="16"
+									viewBox="0 0 17 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
+										stroke=""
+										stroke-width="1.2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									></path>
+								</svg>
+							</a>
+						</li>
+						<li class="text-sm text-gray-800 dark:text-white/90" x-text="pageName"></li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+		<!-- Breadcrumb End -->
+		<div
+			class="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12"
+		>
+			<div class="mx-auto w-full">
+				<h3 class="mb-4 text-theme-xl font-semibold text-gray-800 dark:text-white/90 sm:text-2xl">
+					New Reservations
+				</h3>
+				<div id="res-table"></div>
+			</div>
+		</div>
+	}
+	@templ.JSFuncCall("loadTable", vm.reservations, "new")
+}

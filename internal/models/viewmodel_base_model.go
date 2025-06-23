@@ -1,7 +1,7 @@
 package models
 
 import (
-	"net/http"
+	"context"
 
 	"github.com/nelsonmarro/bookings/config"
 )
@@ -34,23 +34,25 @@ const (
 )
 
 type BaseViewModel struct {
-	Form        *Form
-	FormErrors  Errors
-	CSRFToken   string
-	MessageType MessageType
-	Message     string
+	Form            *Form
+	FormErrors      Errors
+	CSRFToken       string
+	MessageType     MessageType
+	Message         string
+	IsAuthenticated int
 }
 
-func GetSessionMessage(app *config.AppConfig, r *http.Request) (MessageType, string) {
-	errorMessage := app.Session.PopString(r.Context(), "error")
+func GetSessionMessage(ctx context.Context) (MessageType, string) {
+	app := config.GetConfigInstance()
+	errorMessage := app.Session.PopString(ctx, "error")
 	if errorMessage != "" {
 		return MessageTypeError, errorMessage
 	}
-	infoMessage := app.Session.PopString(r.Context(), "info")
+	infoMessage := app.Session.PopString(ctx, "info")
 	if infoMessage != "" {
 		return MessageTypeInfo, infoMessage
 	}
-	warningMessage := app.Session.PopString(r.Context(), "warning")
+	warningMessage := app.Session.PopString(ctx, "warning")
 	if warningMessage != "" {
 		return MessageTypeWarning, warningMessage
 	}

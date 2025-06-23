@@ -1,0 +1,289 @@
+package admin
+
+import "github.com/nelsonmarro/bookings/internal/models"
+import "github.com/axzilla/templui/component/form"
+import "github.com/axzilla/templui/component/input"
+import "github.com/axzilla/templui/component/button"
+import "fmt"
+import "github.com/axzilla/templui/component/modal"
+
+type AdminReservationDetailVM struct {
+	resSrc      string
+	reservation models.Reservation
+	ResMonth    string
+	ResYear     string
+	models.BaseViewModel
+}
+
+func NewReservationDetailVM(reservation models.Reservation, resSrc string) *AdminReservationDetailVM {
+	return &AdminReservationDetailVM{
+		BaseViewModel: models.BaseViewModel{
+			Form:      new(models.Form),
+			CSRFToken: "",
+		},
+		reservation: reservation,
+		resSrc:      resSrc,
+	}
+}
+
+templ headerReservation() {
+	<title>Reservation Details</title>
+}
+
+templ scriptsReservation() {
+	@scriptHandle.Once() {
+		<script src="/static/js/admin/admin-reservation-details.js"></script>
+	}
+}
+
+templ AdminReservationDetail(vm *AdminReservationDetailVM) {
+	@AdminLayout(headerReservation(), "reservationDetail", vm.MessageType, vm.Message, scriptsReservation()) {
+		<div x-data="{ pageName: `Reservation Detail`}">
+			<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+				<h2 class="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName"></h2>
+				<nav>
+					<ol class="flex items-center gap-1.5">
+						<li>
+							<a class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400" href="/admin/dashboard">
+								Home
+								<svg
+									class="stroke-current"
+									width="17"
+									height="16"
+									viewBox="0 0 17 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
+										stroke=""
+										stroke-width="1.2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									></path>
+								</svg>
+							</a>
+						</li>
+						<li class="text-sm text-gray-800 dark:text-white/90" x-text="pageName"></li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+		<!-- Breadcrumb End -->
+		<div
+			class="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12"
+		>
+			<div class="mx-auto w-full">
+				<p><strong>Arrival: { vm.reservation.StartDate.Format("2006-01-02") }</strong></p>
+				<p><strong>Departure: { vm.reservation.EndDate.Format("2006-01-02") }</strong></p>
+				<p><strong>Room: { vm.reservation.Room.RoomName }</strong></p>
+				<form
+					method="post"
+					action={ fmt.Sprintf("/admin/reservations/%s/%d?y=%s&m=%s", vm.resSrc, vm.reservation.ID, vm.ResYear, vm.ResMonth) }
+					class="flex flex-col space-y-4 mt-3"
+				>
+					<input type="hidden" name="csrf_token" value={ vm.CSRFToken }/>
+					<input type="hidden" name="year" value={ vm.ResYear }/>
+					<input type="hidden" name="month" value={ vm.ResMonth }/>
+					@form.Item() {
+						@form.Label(form.LabelProps{
+							For: "first_name",
+						}) {
+							First Name
+						}
+						@input.Input(input.Props{
+							HasError:    vm.Form.Errors.HasField("first_name"),
+							ID:          "first_name",
+							Name:        "first_name",
+							Type:        input.TypeText,
+							Placeholder: "First Name",
+							Value:       vm.reservation.FirstName,
+						},
+						)
+						if len(vm.Form.Errors["first_name"]) > 0 {
+							@form.Message(form.MessageProps{
+								Variant: form.MessageVariantError,
+							}) {
+								{ vm.Form.Errors.Get("first_name") }
+							}
+						}
+					}
+					@form.Item() {
+						@form.Label(form.LabelProps{
+							For: "last_name",
+						}) {
+							Last Name
+						}
+						@input.Input(input.Props{
+							HasError:    vm.Form.Errors.HasField("last_name"),
+							ID:          "last_name",
+							Name:        "last_name",
+							Type:        input.TypeText,
+							Placeholder: "Last Name",
+							Value:       vm.reservation.LastName,
+						},
+						)
+						if len(vm.Form.Errors["last_name"]) > 0 {
+							@form.Message(form.MessageProps{
+								Variant: form.MessageVariantError,
+							}) {
+								{ vm.Form.Errors.Get("last_name") }
+							}
+						}
+					}
+					@form.Item() {
+						@form.Label(form.LabelProps{
+							For: "email",
+						}) {
+							Email
+						}
+						@input.Input(input.Props{
+							HasError:    vm.Form.Errors.HasField("email"),
+							ID:          "email",
+							Name:        "email",
+							Type:        input.TypeEmail,
+							Placeholder: "Email",
+							Value:       vm.reservation.Email,
+						},
+						)
+						if len(vm.Form.Errors["email"]) > 0 {
+							@form.Message(form.MessageProps{
+								Variant: form.MessageVariantError,
+							}) {
+								{ vm.Form.Errors.Get("email") }
+							}
+						}
+					}
+					@form.Item() {
+						@form.Label(form.LabelProps{
+							For: "phone_number",
+						}) {
+							Phone Number
+						}
+						@input.Input(input.Props{
+							ID:          "phone_number",
+							Name:        "phone_number",
+							Type:        input.TypeText,
+							Placeholder: "Phone Number",
+							Value:       vm.reservation.PhoneNumber,
+						},
+						)
+					}
+					<div class="grid grid-cols-2">
+						<div class="flex space-x-4">
+							@button.Button(button.Props{
+								Type: button.TypeSubmit,
+							}) {
+								Confirm Reservation
+							}
+							{{
+	hrefCancel := ""
+	if vm.resSrc == "calendar" {
+		hrefCancel = fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", vm.ResYear, vm.ResMonth)
+	} else {
+		hrefCancel = fmt.Sprintf("/admin/reservations-%s", vm.resSrc)
+	}
+							}}
+							@button.Button(button.Props{
+								Variant: button.VariantSecondary,
+								Href:    hrefCancel,
+							}) {
+								Cancel
+							}
+							@modal.Trigger(modal.TriggerProps{
+								ModalID: "processed-modal",
+							}) {
+								@button.Button() {
+									Mark as Processed
+								}
+							}
+							@modal.Modal(modal.Props{
+								ID:    "processed-modal",
+								Class: "max-w-md",
+							}) {
+								@modal.Header() {
+									Are you absolutely sure?
+								}
+								@modal.Body() {
+									This action cannot be undone. This will mark the reservation as processed.			
+								}
+								@modal.Footer() {
+									<div class="flex gap-2">
+										@modal.Close(modal.CloseProps{
+											ModalID: "processed-modal",
+										}) {
+											@button.Button() {
+												Cancel
+											}
+										}
+										@modal.Close(modal.CloseProps{
+											ModalID: "processed-modal",
+										}) {
+											@button.Button(button.Props{
+												Variant: button.VariantSecondary,
+											}) {
+												Continue
+											}
+											<script>
+                      me("-").on("click", ev => {
+                        changeProcessed({{ vm.resSrc }}, {{ vm.reservation.ID }}, {{ vm.ResYear }}, {{ vm.ResMonth }})
+                      })
+                    </script>
+										}
+									</div>
+								}
+							}
+						</div>
+						<div class="flex justify-end">
+							@modal.Trigger(modal.TriggerProps{
+								ModalID: "delete-modal",
+							}) {
+								@button.Button(button.Props{
+									Variant: button.VariantDestructive,
+								}) {
+									Delete
+								}
+							}
+							@modal.Modal(modal.Props{
+								ID:    "delete-modal",
+								Class: "max-w-md",
+							}) {
+								@modal.Header() {
+									Are you absolutely sure?
+								}
+								@modal.Body() {
+									This action cannot be undone. This will delete the reservation permanetly.			
+								}
+								@modal.Footer() {
+									<div class="flex gap-2">
+										@modal.Close(modal.CloseProps{
+											ModalID: "delete-modal",
+										}) {
+											@button.Button() {
+												Cancel
+											}
+										}
+										@modal.Close(modal.CloseProps{
+											ModalID: "delete-modal",
+										}) {
+											@button.Button(button.Props{
+												Variant: button.VariantDestructive,
+											}) {
+												Delete
+											}
+											<script>
+                      me("-").on("click", ev => {
+                        deleteReservation({{ vm.resSrc }}, {{ vm.reservation.ID }}, {{ vm.ResYear }}, {{ vm.ResMonth }})
+                      })
+                    </script>
+										}
+									</div>
+								}
+							}
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+}

@@ -2,7 +2,6 @@ package templates
 
 import (
 	"github.com/axzilla/templui/component/button"
-	"github.com/axzilla/templui/component/datepicker"
 	"github.com/axzilla/templui/component/form"
 	"github.com/axzilla/templui/component/input"
 	"github.com/nelsonmarro/bookings/internal/models"
@@ -14,15 +13,18 @@ templ headConfirm() {
 
 type ConfirmReservationPageVM struct {
 	Reservation models.Reservation
+	StartDate   string
+	EndDate     string
 	models.BaseViewModel
 }
 
-func NewConfirmReservationPageVM() *ConfirmReservationPageVM {
+func NewConfirmReservationPageVM(reservation models.Reservation) *ConfirmReservationPageVM {
 	return &ConfirmReservationPageVM{
 		BaseViewModel: models.BaseViewModel{
 			Form:      new(models.Form),
 			CSRFToken: "",
 		},
+		Reservation: reservation,
 	}
 }
 
@@ -32,7 +34,11 @@ templ ConfirmReservationPage(vm *ConfirmReservationPageVM) {
 			<div class="w-3/4 h-[690px]">
 				<div>
 					<h1 class="text-3xl font-bold text-center mt-4">Confirm Reservation</h1>
-					<div class="w-full">
+					<p><strong>Reservation Details</strong></p>
+					<p>Room: { vm.Reservation.Room.RoomName }</p>
+					<p>Arrival: { vm.StartDate }</p>
+					<p>Departure: { vm.EndDate }</p>
+					<div class="w-full pt-5">
 						<form
 							method="post"
 							data-testid="confirm-reservation-form"
@@ -40,7 +46,9 @@ templ ConfirmReservationPage(vm *ConfirmReservationPageVM) {
 							class="flex flex-col space-y-4"
 						>
 							<input type="hidden" name="csrf_token" value={ vm.CSRFToken }/>
-							<input type="hidden" name="room_id" value="1"/>
+							<input type="hidden" name="room_id" value={ vm.Reservation.RoomID }/>
+							<input type="hidden" name="start_date" value={ vm.StartDate }/>
+							<input type="hidden" name="end_date" value={ vm.EndDate }/>
 							@form.Item() {
 								@form.Label(form.LabelProps{
 									For: "first_name",
@@ -124,45 +132,6 @@ templ ConfirmReservationPage(vm *ConfirmReservationPageVM) {
 									Value:       vm.Reservation.PhoneNumber,
 								},
 								)
-							}
-							@form.Item() {
-								@form.Label(form.LabelProps{
-									For: "start_date",
-								}) {
-									Start Date
-								}
-								@datepicker.DatePicker(datepicker.Props{
-									HasError: false,
-									ID:       "start_date",
-									Name:     "start_date",
-									Value:    vm.Reservation.StartDate,
-								})
-								if len(vm.Form.Errors["start_date"]) > 0 {
-									@form.Message(form.MessageProps{
-										Variant: form.MessageVariantError,
-									}) {
-										Select a valid date
-									}
-								}
-							}
-							@form.Item() {
-								@form.Label(form.LabelProps{
-									For: "end_date",
-								}) {
-									End Date
-								}
-								@datepicker.DatePicker(datepicker.Props{
-									ID:    "end_date",
-									Name:  "end_date",
-									Value: vm.Reservation.EndDate,
-								})
-								if len(vm.Form.Errors["enddate"]) > 0 {
-									@form.Message(form.MessageProps{
-										Variant: form.MessageVariantError,
-									}) {
-										Select a valid date
-									}
-								}
 							}
 							@button.Button(button.Props{
 								Type: button.TypeSubmit,

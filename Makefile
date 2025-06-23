@@ -1,6 +1,5 @@
-DOCKER_COMPOSE = docker-compose -f deploy/docker-compose.yml
-APP_SERVICE = app
-PROJECT_DIR = $(PWD)
+CMD = ./cmd/web/main.go 
+OUT_DIR = ./build
 
 .PHONY: help up down build generate dev test clean logs shell
 
@@ -10,35 +9,17 @@ help: ## This help dialog
 run-local-server: ## Run the app locally
 	air -c .air.toml
 
-run-ui-desktop: ## Run the app locally
-	go run ./cmd/kybermed_UI/ui.go
-
-run-ui-mobile: ## Run the app locally
-	go run -tags mobile ./cmd/kybermed_UI/ui.go
-
 requirements: ## Generate go.mod & go.sum files
 	go mod tidy
 
 clean-packages: ## Clean packages
 	go clean -modcache
 
-up:
-	$(DOCKER_COMPOSE) up $(APP_SERVICE) --build 
+build-production:
+	go build -o $(OUT_DIR)/bookings $(CMD) -production=true -dbname=bookingsdb -dbuser=nelson -dbpassword=nelson9199 -dbhost=localhost -dbport=5432 -dbssl=disable
 
-down: ## Stop all running containers
-	$(DOCKER_COMPOSE) down
-
-build: ## Build the production Docker image
-	$(DOCKER_COMPOSE) build --no-cache
+build-development:
+	go build -o $(OUT_DIR)/bookings-dev $(CMD) -production=false -dbname=bookingsdb -dbuser=nelson -dbpassword=nelson9199 -dbhost=localhost -dbport=5432 -dbssl=disable
 
 test:
 	go test -v ./...
-
-logs: ## View logs from the app container
-	$(DOCKER_COMPOSE) logs -f $(APP_SERVICE)
-
-shell: ## Open an interactive shell in the app container
-	docker exec -it $(APP_SERVICE) /bin/sh
-
-clean: ## Clean up Docker volumes and containers
-	$(DOCKER_COMPOSE) down -v

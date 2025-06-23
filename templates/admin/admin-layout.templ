@@ -1,0 +1,75 @@
+package admin
+
+import "github.com/nelsonmarro/bookings/templates/components"
+import "fmt"
+import "github.com/axzilla/templui/component/modal"
+import "github.com/nelsonmarro/bookings/templates/deps"
+import "github.com/axzilla/templui/component/toast"
+import "github.com/nelsonmarro/bookings/internal/models"
+
+templ headSection(contents templ.Component) {
+	<head>
+		<meta charset="UTF-8"/>
+		<meta
+			name="viewport"
+			content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+		/>
+		<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+		<link rel="icon" href="/static/favicon.ico"/>
+		<link rel="stylesheet" href="/static/css/styles.css"/>
+		@contents
+		@deps.SurrealJs()
+	</head>
+}
+
+templ scriptsSection(scripts ...templ.Component) {
+	@toast.Script()
+	@modal.Script()
+	<script src="/static/js/admin/bundle.js"></script>
+	for _, scriptComponent := range scripts {
+		@scriptComponent
+	}
+}
+
+templ AdminLayout(headContent templ.Component, pageName string, msgType models.MessageType, msg string, scripts ...templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		@headSection(headContent)
+		{{
+xdata := fmt.Sprintf("{ page: '%s', 'loaded': true, 'darkMode': false, 'stickyMenu': false,'sidebarToggle':false,'scrollTop': false }", pageName)
+		}}
+		<body
+			x-data={ xdata }
+			x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+			:class="{'dark bg-gray-900': darkMode === true}"
+		>
+			<!-- ===== Page Wrapper Start ===== -->
+			<div class="flex h-screen overflow-hidden">
+				<!-- ===== Sidebar End ===== -->
+				@components.AdminSidebar()
+				<!-- ===== Content Area Start ===== -->
+				<div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
+					<!-- Small Device Overlay Start -->
+					@components.AdminOverlay()
+					<!-- Small Device Overlay End -->
+					<!-- ===== Header Start ===== -->
+					@components.AdminHeader()
+					<!-- ===== Header End ===== -->
+					<!-- ===== Main Content Start ===== -->
+					<main>
+						<div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+							@components.Toast(msgType, msg)
+							{ children... }
+						</div>
+					</main>
+					<!-- ===== Main Content End ===== -->
+				</div>
+				<!-- ===== Content Area End ===== -->
+			</div>
+			<!-- ===== Page Wrapper End ===== -->
+			@scriptsSection(scripts...)
+		</body>
+	</html>
+}

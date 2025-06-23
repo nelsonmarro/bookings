@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/alexedwards/scs/v2"
+	"github.com/nelsonmarro/bookings/internal/email"
 )
 
 var (
@@ -21,6 +22,7 @@ type AppConfig struct {
 	ErrorLog     *log.Logger
 	InProduction bool
 	Session      *scs.SessionManager
+	MailChan     chan email.MailData
 }
 
 func GetConfigInstance() *AppConfig {
@@ -36,6 +38,7 @@ func GetConfigInstance() *AppConfig {
 		instance.Session.Cookie.Persist = true
 		instance.Session.Cookie.SameSite = http.SameSiteLaxMode
 		instance.Session.Cookie.Secure = instance.InProduction
+		instance.MailChan = make(chan email.MailData)
 	})
 	return instance
 }

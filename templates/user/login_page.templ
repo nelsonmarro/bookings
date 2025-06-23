@@ -1,0 +1,92 @@
+package user
+
+import (
+	"github.com/axzilla/templui/component/button"
+	"github.com/axzilla/templui/component/form"
+	"github.com/axzilla/templui/component/input"
+	"github.com/nelsonmarro/bookings/internal/models"
+	"github.com/nelsonmarro/bookings/templates"
+)
+
+templ loginHead() {
+	<title>Login Page</title>
+}
+
+type LoginPageVM struct {
+	Email    string
+	Password string
+	models.BaseViewModel
+}
+
+func NewLoginPageVM() *LoginPageVM {
+	return &LoginPageVM{
+		BaseViewModel: models.BaseViewModel{
+			Form:      new(models.Form),
+			CSRFToken: "",
+		},
+	}
+}
+
+templ LoginPage(vm *LoginPageVM) {
+	@templates.MainLayout(loginHead()) {
+		<div class="flex flex-row justify-center py-5">
+			<div class="w-3/4">
+				<h1 class="text-4xl text-center">Login</h1>
+				<form method="post" action="/user/login" class="flex flex-col space-y-4">
+					<input type="hidden" name="csrf_token" value={ vm.CSRFToken }/>
+					@form.Item() {
+						@form.Label(form.LabelProps{
+							For: "email",
+						}) {
+							Email
+						}
+						@input.Input(input.Props{
+							HasError:    vm.Form.Errors.HasField("email"),
+							ID:          "email",
+							Name:        "email",
+							Type:        input.TypeEmail,
+							Placeholder: "Email",
+							Value:       vm.Email,
+						},
+						)
+						if len(vm.Form.Errors["email"]) > 0 {
+							@form.Message(form.MessageProps{
+								Variant: form.MessageVariantError,
+							}) {
+								{ vm.Form.Errors.Get("email") }
+							}
+						}
+					}
+					@form.Item() {
+						@form.Label(form.LabelProps{
+							For: "password",
+						}) {
+							Password
+						}
+						@input.Input(input.Props{
+							HasError:    vm.Form.Errors.HasField("password"),
+							ID:          "password",
+							Name:        "password",
+							Type:        input.TypePassword,
+							Placeholder: "Password",
+							Value:       vm.Password,
+						},
+						)
+						if len(vm.Form.Errors["password"]) > 0 {
+							@form.Message(form.MessageProps{
+								Variant: form.MessageVariantError,
+							}) {
+								{ vm.Form.Errors.Get("password") }
+							}
+						}
+					}
+					@button.Button(button.Props{
+						Type: button.TypeSubmit,
+					}) {
+						Login
+					}
+				</form>
+			</div>
+		</div>
+	}
+}

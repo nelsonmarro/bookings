@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/nelsonmarro/bookings/config"
@@ -19,9 +18,6 @@ func NewAboutpageHandler(app *config.AppConfig) *AboutpageHandler {
 }
 
 func (h *AboutpageHandler) Get(w http.ResponseWriter, r *http.Request) {
-	remoteIP := h.app.Session.GetString(r.Context(), "remote_ip")
-	fmt.Println("Remote IP:", remoteIP)
-
 	about := templates.AboutePage()
 	err := about.Render(r.Context(), w)
 	if err != nil {

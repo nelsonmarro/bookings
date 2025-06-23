@@ -1,0 +1,3 @@
+add_column("reservations", "processed", "bool", {"default": false})
+
+

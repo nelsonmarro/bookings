@@ -4,6 +4,7 @@ import "time"
 
 // Reservation is the reservation model
 type Reservation struct {
+	ID          int
 	FirstName   string
 	LastName    string
 	Email       string
@@ -13,5 +14,6 @@ type Reservation struct {
 	RoomID      int
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	Processed   bool
 	Room        Room
 }

@@ -29,8 +29,13 @@ func (h *ReservationSummaryHandler) Get(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	sd := reservation.StartDate.Format("2006-01-02")
+	ed := reservation.EndDate.Format("2006-01-02")
+
 	summaryVm := templates.NewReservationSummaryPageVM()
 	summaryVm.Reservation = reservation // Poblar con los datos de la sesión.
+	summaryVm.StartDate = sd
+	summaryVm.EndDate = ed
 	summaryPage := templates.ReservationSumary(summaryVm)
 	err := summaryPage.Render(r.Context(), w)
 	if err != nil {

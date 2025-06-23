@@ -3,7 +3,10 @@ package rooms
 import (
 	"net/http"
 
+	"github.com/justinas/nosurf"
+
 	"github.com/nelsonmarro/bookings/config"
+	"github.com/nelsonmarro/bookings/internal/helpers"
 	"github.com/nelsonmarro/bookings/templates/rooms"
 )
 
@@ -18,10 +21,12 @@ func NewDoubleRoomHandler(app *config.AppConfig) *DoubleRoomHandler {
 }
 
 func (h *DoubleRoomHandler) Get(w http.ResponseWriter, r *http.Request) {
-	doubleRoom := rooms.DoubleRoomPage()
+	vm := rooms.NewDoubleRoomPageVM(nosurf.Token(r))
+
+	doubleRoom := rooms.DoubleRoomPage(vm)
 	err := doubleRoom.Render(r.Context(), w)
 	if err != nil {
-		http.Error(w, "Error rendering template", http.StatusInternalServerError)
+		helpers.ServerError(w, err)
 		return
 	}
 }

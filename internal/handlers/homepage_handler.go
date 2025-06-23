@@ -21,7 +21,7 @@ func NewHomepageHandler(app *config.AppConfig) *HomepageHandler {
 func (h *HomepageHandler) Get(w http.ResponseWriter, r *http.Request) {
 	vm := templates.NewHomePageVM()
 
-	messageType, message := models.GetSessionMessage(h.app, r)
+	messageType, message := models.GetSessionMessage(r.Context())
 	vm.MessageType = messageType
 	vm.Message = message
 
